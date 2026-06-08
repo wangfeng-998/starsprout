@@ -41,6 +41,42 @@ const concepts: Concept[] = [
     color: '#b8d8ba',
   },
   {
+    id: 'determinant-intro',
+    title: '行列式的秘密',
+    description: '一个数字，藏着矩阵的"缩放因子"，像花园的放大镜...',
+    category: 'linear',
+    difficulty: 2,
+    icon: '🔍',
+    color: '#e8c4c4',
+  },
+  {
+    id: 'matrix-multiply',
+    title: '矩阵的"握手"',
+    description: '两个矩阵相乘就像两群人互相握手——每个人都有搭档...',
+    category: 'linear',
+    difficulty: 2,
+    icon: '🤝',
+    color: '#c4c8e8',
+  },
+  {
+    id: 'linear-transform',
+    title: '空间的变形',
+    description: '线性变换像一面哈哈镜——拉伸、旋转、翻转整个空间...',
+    category: 'linear',
+    difficulty: 3,
+    icon: '🌀',
+    color: '#c4e8d0',
+  },
+  {
+    id: 'eigenvalue-intro',
+    title: '特征值与特征向量',
+    description: '有些特殊的方向，变换后只是被拉长或缩短，方向不变...',
+    category: 'linear',
+    difficulty: 3,
+    icon: '🎯',
+    color: '#e8d0c4',
+  },
+  {
     id: 'limit-intro',
     title: '极限的感觉',
     description: '无限靠近却不触碰，就像靠近河岸看自己的倒影...',
@@ -50,13 +86,40 @@ const concepts: Concept[] = [
     color: '#b5d8e8',
   },
   {
+    id: 'continuity',
+    title: '连续是什么？',
+    description: '如果你可以不抬笔画出函数的图像，它就是连续的...',
+    category: 'calculus',
+    difficulty: 1,
+    icon: '✏️',
+    color: '#d0e8c4',
+  },
+  {
     id: 'derivative-intro',
     title: '变化的速度',
-    description: '导数告诉你每一刻事物在如何变化...',
+    description: '导数告诉你每一刻事物在如何变化——就像速度表...',
     category: 'calculus',
     difficulty: 2,
     icon: '🏃',
     color: '#fad4c0',
+  },
+  {
+    id: 'optimization',
+    title: '找最优解',
+    description: '用导数找到最大值和最小值——山坡的最高点和最低谷...',
+    category: 'calculus',
+    difficulty: 2,
+    icon: '⛰️',
+    color: '#c4e8e0',
+  },
+  {
+    id: 'fundamental-theorem',
+    title: '微积分基本定理',
+    description: '微分和积分是一对相反的操作，像走路与倒带...',
+    category: 'calculus',
+    difficulty: 2,
+    icon: '🔗',
+    color: '#c4d0e8',
   },
   {
     id: 'integral-intro',
@@ -66,6 +129,24 @@ const concepts: Concept[] = [
     difficulty: 3,
     icon: '🧩',
     color: '#f7e8a0',
+  },
+  {
+    id: 'partial-derivative',
+    title: '偏导数',
+    description: '当事情不止一个因素在变化时，我们一次只看一个...',
+    category: 'calculus',
+    difficulty: 3,
+    icon: '🎛️',
+    color: '#e8c4d0',
+  },
+  {
+    id: 'taylor-series',
+    title: '泰勒展开',
+    description: '用简单的多项式去近似复杂的函数，像用方形积木拼圆...',
+    category: 'calculus',
+    difficulty: 3,
+    icon: '🪜',
+    color: '#d0c4e8',
   },
 ];
 
@@ -93,11 +174,41 @@ const quizQuestions: Record<string, {
     correct: 2,
     hint: '2×2 = 行数 × 列数 = ?',
   },
+  'determinant-intro': {
+    question: '二阶行列式的值 = ad - bc。如果 ad = bc，行列式 = ?',
+    options: ['1', '0', '-1', '2'],
+    correct: 1,
+    hint: 'ad - bc，当 ad 等于 bc 时，结果是多少？',
+  },
+  'matrix-multiply': {
+    question: '两个 2×2 矩阵相乘，结果是什么大小？',
+    options: ['1×1', '2×2', '4×4', '2×1'],
+    correct: 1,
+    hint: '矩阵乘法：m×n 乘 n×p = m×p。2×2 乘 2×2 = ?',
+  },
+  'linear-transform': {
+    question: '线性变换不会做以下哪件事？',
+    options: ['旋转', '拉伸', '弯曲直线', '镜像翻转'],
+    correct: 2,
+    hint: '"线性"意味着直线变换后还是直线...',
+  },
+  'eigenvalue-intro': {
+    question: '特征向量在变换后会发生什么？',
+    options: ['方向改变', '只在原方向上伸缩', '消失', '变成零向量'],
+    correct: 1,
+    hint: '"特征"意思是"保持不变的特征"——什么保持不变？',
+  },
   'limit-intro': {
     question: '"极限"描述的是什么？',
     options: ['最大值', '无限接近某个值的趋势', '最小值', '平均值'],
     correct: 1,
     hint: '不是到达，而是"越来越靠近"...',
+  },
+  'continuity': {
+    question: '下列哪个函数在 x=0 处不连续？',
+    options: ['y = x²', 'y = 1/x', 'y = sin(x)', 'y = x+1'],
+    correct: 1,
+    hint: '哪个函数在 x=0 处"断开"了？（分母为0）',
   },
   'derivative-intro': {
     question: '导数告诉我们什么？',
@@ -105,11 +216,35 @@ const quizQuestions: Record<string, {
     correct: 1,
     hint: '如果你在开车，导数是你的速度表。',
   },
+  'optimization': {
+    question: '要找函数的最大值，应该令什么等于0？',
+    options: ['函数本身', '导数（斜率）', '二阶导数', '积分'],
+    correct: 1,
+    hint: '山顶和山谷的共同点是什么？——坡度为0！',
+  },
+  'fundamental-theorem': {
+    question: '微分和积分是什么关系？',
+    options: ['完全无关', '互为逆运算', '完全相同', '积分是微分的2倍'],
+    correct: 1,
+    hint: '就像加法和减法、乘法和除法一样...',
+  },
   'integral-intro': {
     question: '积分和什么最像？',
     options: ['计算速度', '把碎片拼成整体', '测量角度', '找最大值'],
     correct: 1,
     hint: '就像把下雨的每一滴水收集起来，看总共有多少水...',
+  },
+  'partial-derivative': {
+    question: '偏导数一次只对几个变量求导？',
+    options: ['所有变量', '一个变量', '两个变量', '零个'],
+    correct: 1,
+    hint: '"偏"意味着只关注一部分——其他变量暂时当做常数。',
+  },
+  'taylor-series': {
+    question: '泰勒展开用什么来近似函数？',
+    options: ['三角函数', '多项式', '指数函数', '对数'],
+    correct: 1,
+    hint: 'x + x²/2 + x³/6 + ... 这是用什么在逼近？',
   },
 };
 
@@ -179,6 +314,12 @@ export default function MathGarden() {
     }
   };
 
+  // 过滤难易度
+  const [filterDifficulty, setFilterDifficulty] = useState<number | null>(null);
+  const visibleConcepts = filterDifficulty
+    ? concepts.filter((c) => c.difficulty === filterDifficulty)
+    : concepts;
+
   return (
     <motion.div
       className="max-w-lg mx-auto px-5 pt-8 pb-4 page-transition"
@@ -222,13 +363,31 @@ export default function MathGarden() {
         </div>
       </div>
 
-      {/* Concept Seeds */}
-      <h2 className="text-sm font-semibold text-earth-500 mb-3">
-        今天的种子
-      </h2>
+      {/* 难度筛选 */}
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-semibold text-earth-500">
+          种子库（{concepts.length} 颗）
+        </h2>
+        <div className="flex gap-1">
+          {[null, 1, 2, 3].map((d) => (
+            <button
+              key={String(d)}
+              onClick={() => setFilterDifficulty(d)}
+              className={`text-xs px-2 py-1 rounded-lg transition-all ${
+                filterDifficulty === d
+                  ? 'bg-calm-gold/20 text-calm-gold font-medium'
+                  : 'text-earth-400 hover:bg-earth-100'
+              }`}
+            >
+              {d === null ? '全部' : `${'⭐'.repeat(d)}`}
+            </button>
+          ))}
+        </div>
+      </div>
 
+      {/* Concept Seeds */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        {concepts.map((concept) => {
+        {visibleConcepts.map((concept) => {
           const progress = getConceptProgress(concept.id);
           const stage = progress?.stage || 'seed';
           const stageInfo = stageToLabel[stage];
@@ -249,6 +408,9 @@ export default function MathGarden() {
                 <span className="text-xl">{concept.icon}</span>
                 <span className="text-xs text-earth-400 italic">
                   {concept.category === 'linear' ? '线代' : '微积分'}
+                </span>
+                <span className="text-xs ml-auto">
+                  {'⭐'.repeat(concept.difficulty)}
                 </span>
               </div>
               <h3 className="text-sm font-medium text-earth-700 mb-1">
