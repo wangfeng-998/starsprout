@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&family=ZCOOL+KuaiLe&display=swap');
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: #faf7f2;
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    @apply bg-calm-gold/30 text-earth-800;
+  }
+}
+
+@layer components {
+  .card-warm {
+    @apply bg-white/80 backdrop-blur-sm rounded-soft shadow-lg shadow-earth-200/50 
+           border border-earth-100/50 p-5 transition-all duration-300
+           hover:shadow-xl hover:shadow-earth-200/60;
+  }
+
+  .btn-warm {
+    @apply px-6 py-3 rounded-full font-medium text-earth-700 
+           transition-all duration-300 active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn-warm bg-calm-gold/80 hover:bg-calm-gold text-white shadow-md;
+  }
+
+  .btn-ghost {
+    @apply btn-warm bg-transparent hover:bg-earth-100/50;
+  }
+
+  .input-warm {
+    @apply w-full bg-white/90 border border-earth-200 rounded-2xl px-4 py-3
+           text-earth-700 placeholder-earth-400
+           focus:outline-none focus:ring-2 focus:ring-calm-gold/30 focus:border-calm-gold/50
+           transition-all duration-200;
+  }
+
+  .nav-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+
+  .page-transition {
+    @apply animate-[fadeIn_0.4s_ease-out];
+  }
+
+  .petal-bg {
+    background: radial-gradient(ellipse at top, #fefce8 0%, #faf7f2 40%, #f5f0e8 100%);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* PWA standalone mode tweaks */
+@media (display-mode: standalone) {
+  .nav-safe {
+    padding-bottom: calc(env(safe-area-inset-bottom, 1rem) + 0.5rem);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-earth-300 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-earth-400;
+}

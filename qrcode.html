@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星芽 - 二维码</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#f5f0e8 0%,#e8d5c4 50%,#d4c5b9 100%);font-family:'Noto Sans SC',sans-serif;padding:20px}
+  .card{background:rgba(255,255,255,.85);border-radius:24px;padding:36px 32px;text-align:center;box-shadow:0 8px 32px rgba(139,115,85,.15);backdrop-filter:blur(10px);max-width:400px;width:100%}
+  h1{font-size:22px;color:#5c4a3a;margin-bottom:4px;font-weight:600}
+  .sub{font-size:12px;color:#b8a590;margin-bottom:24px}
+  .qr-wrap{display:inline-block;padding:16px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  img{display:block;width:260px;height:260px;border-radius:4px}
+  .url{font-size:11px;color:#a09080;margin-top:20px;word-break:break-all;background:rgba(245,240,232,.5);padding:8px 12px;border-radius:8px;line-height:1.4}
+  .hint{font-size:13px;color:#8b7355;margin-top:16px}
+  .logo{font-size:48px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🌟🌱</div>
+  <h1>星芽 StarSprout</h1>
+  <p class="sub">扫描二维码，在手机上打开</p>
+  <div class="qr-wrap">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://8a5f08e4283147e093c4f322d885e03a.codebuddy.cloudstudio.run" alt="星芽二维码" onerror="this.onerror=null;this.src='data:image/svg+xml,'+encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22><rect width=%22300%22 height=%22300%22 fill=%22%23f5f0e8%22/><text x=%22150%22 y=%22155%22 text-anchor=%22middle%22 font-size=%2214%22 fill=%22%23888%22>QR 加载中...</text></svg>')">
+  </div>
+  <p class="url">http://8a5f08e4283147e093c4f322d885e03a.codebuddy.cloudstudio.run</p>
+  <p class="hint">📱 用手机相机扫描二维码即可访问</p>
+</div>
+</body>
+</html>

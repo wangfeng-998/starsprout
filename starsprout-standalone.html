@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f0e8">
+<title>星芽 StarSprout</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#faf7f2;--earth-50:#faf7f2;--earth-100:#f5f0e8;--earth-200:#ebe3d5;--earth-300:#d4c9b5;--earth-400:#b8a99a;--earth-500:#a0917b;--earth-600:#7d6f5d;--earth-700:#5e5345;--earth-800:#3d352c;--earth-900:#1f1b16;--gold:#c9a96e;--gold-light:#c9a96e30;--rose:#f4c2c2;--lavender:#d4c5e2;--mint:#b8d8ba;--sky:#b5d8e8;--peach:#fad4c0;--calm-blue:#7ba7c9;--calm-green:#8fbc8f;--calm-pink:#d4a5a5;--calm-purple:#b8a9c9}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;background:radial-gradient(ellipse at top,#fefce8 0%,#faf7f2 40%,#f5f0e8 100%);color:var(--earth-700);min-height:100dvh;-webkit-tap-highlight-color:transparent}
+#root{min-height:100dvh}
+.card{background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border-radius:20px;box-shadow:0 2px 20px rgba(213,201,181,.4);border:1px solid rgba(235,227,213,.6);padding:20px;margin-bottom:14px;transition:all .3s}
+.btn{padding:10px 24px;border-radius:999px;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:rgba(201,169,110,.78);color:#fff;box-shadow:0 2px 12px rgba(201,169,110,.25)}
+.btn-primary:hover{background:rgba(201,169,110,.9)}
+.btn-ghost{background:transparent;color:var(--earth-400)}
+.btn-ghost:hover{background:rgba(235,227,213,.4)}
+.input{width:100%;background:rgba(255,255,255,.9);border:1px solid var(--earth-200);border-radius:16px;padding:10px 14px;font-size:14px;color:var(--earth-700);outline:none;font-family:inherit;transition:all .2s}
+.input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,.15)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.88);backdrop-filter:blur(20px);border-top:1px solid rgba(235,227,213,.7);display:flex;justify-content:space-around;align-items:center;height:64px;padding-bottom:env(safe-area-inset-bottom,4px);z-index:100}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:12px;cursor:pointer;font-size:20px;transition:all .2s;min-width:56px;border:none;background:none;font-family:inherit}
+.nav-item span:last-child{font-size:10px;font-weight:500}
+.nav-item.active{color:var(--gold);transform:scale(1.06)}
+.nav-item:not(.active){color:var(--earth-400)}
+.page{padding:24px 20px 100px;max-width:460px;margin:0 auto}
+.fade-in{animation:fadeIn .35s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.18);opacity:1}}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+.float{animation:float 5s ease-in-out infinite}
+.breathe{animation:breathe 8s ease-in-out infinite}
+.twinkle{animation:twinkle 3s ease-in-out infinite}
+.tag{font-size:10px;padding:2px 8px;border-radius:99px;font-weight:500}
+.modal-overlay{position:fixed;inset:0;background:rgba(61,53,44,.25);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:20px;padding:22px;max-width:400px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.12);max-height:85vh;overflow-y:auto}
+h1{font-size:24px;font-weight:700;color:var(--earth-700);margin-bottom:4px}
+h2{font-size:15px;font-weight:600;color:var(--earth-600);margin-bottom:8px}
+.sub{font-size:13px;color:var(--earth-400)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.emoji-btn{aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:24px;cursor:pointer;border:none;background:rgba(245,240,232,.5);transition:all .2s;font-family:inherit}
+.emoji-btn:hover{background:rgba(245,240,232,.8)}
+.emoji-btn.active{background:#fff;box-shadow:0 0 0 2px var(--gold-light);transform:scale(1.1)}
+.emoji-btn span:last-child{font-size:9px;color:var(--earth-400)}
+.intensity-btn{flex:1;padding:6px 0;border-radius:12px;font-size:11px;cursor:pointer;border:none;background:rgba(245,240,232,.5);color:var(--earth-400);transition:all .2s;font-family:inherit}
+.intensity-btn.active{background:var(--gold-light);color:var(--gold);font-weight:600}
+.code-editor{width:100%;background:#1f1b16;color:#a7f3a7;font-family:'Cascadia Code','Fira Code',monospace;font-size:13px;padding:12px;border-radius:14px;resize:vertical;min-height:100px;outline:none;border:none;line-height:1.5;tab-size:2}
+.output-box{background:var(--earth-50);border:1px solid var(--earth-100);border-radius:14px;padding:12px;font-family:'Cascadia Code','Fira Code',monospace;font-size:13px;white-space:pre-wrap;color:var(--earth-600);margin-top:10px;min-height:40px}
+.dots{display:flex;justify-content:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:99px;background:var(--earth-200);transition:all .3s}
+.dot.active{width:24px;background:var(--gold)}
+.progress-ring{transform:rotate(-90deg)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--earth-300);border-radius:99px}
+[data-theme="dark"]{--cream:#16162a;--earth-50:#16162a;--earth-100:#1e1e3a;--earth-200:#28284c;--earth-300:#3a3a62;--earth-400:#6a6a92;--earth-500:#9595b8;--earth-600:#bbb9d4;--earth-700:#d8d7ee;--earth-800:#ececf8;--earth-900:#f5f5ff;--gold:#dbb86e;--gold-light:#dbb86e28;--rose:#d4a0a0;--lavender:#b8a8d4;--mint:#8abc8c;--sky:#8ab8d8;--peach:#e0b898;--calm-blue:#6a96b8;--calm-green:#78a878;--calm-pink:#c09090;--calm-purple:#a898b8}
+[data-theme="dark"] body{background:radial-gradient(ellipse at top,#1e1e42 0%,#16162a 40%,#12122a 100%)}
+[data-theme="dark"] .card{background:rgba(30,30,50,.9);border-color:rgba(60,60,90,.5);box-shadow:0 2px 20px rgba(0,0,0,.3)}
+[data-theme="dark"] .input{background:rgba(20,20,40,.7);border-color:var(--earth-300)}
+[data-theme="dark"] .btn-ghost{color:var(--earth-400)}[data-theme="dark"] .btn-ghost:hover{background:rgba(60,60,90,.4)}
+[data-theme="dark"] .bottom-nav{background:rgba(22,22,42,.92);border-color:rgba(60,60,90,.4)}
+[data-theme="dark"] .emoji-btn{background:rgba(40,40,70,.5)}[data-theme="dark"] .emoji-btn.active{box-shadow:0 0 0 2px var(--gold-light)}
+[data-theme="dark"] .intensity-btn{background:rgba(40,40,70,.5)}[data-theme="dark"] .modal{background:#1e1e3a;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+[data-theme="dark"] .modal-overlay{background:rgba(0,0,0,.5)}
+[data-theme="dark"] .code-editor{background:#0a0a1e;color:#7aef8a}
+[data-theme="dark"] .output-box{background:var(--earth-900)}
+[data-theme="dark"] .dot{background:var(--earth-300)}
+.theme-toggle{position:fixed;top:14px;right:14px;z-index:150;width:40px;height:40px;border-radius:99px;border:none;cursor:pointer;font-size:18px;background:rgba(255,255,255,.7);backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,0,0,.08);transition:all .3s;display:flex;align-items:center;justify-content:center}
+[data-theme="dark"] .theme-toggle{background:rgba(40,40,70,.8);box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.top-nav-bar{display:flex;align-items:center;gap:6px;padding:4px 12px;max-width:460px;margin:0 auto;min-height:36px}
+.top-nav-btn{display:inline-flex;align-items:center;gap:2px;padding:4px 10px;border-radius:99px;border:none;cursor:pointer;font-size:12px;font-family:inherit;color:var(--earth-500);background:rgba(235,227,213,.35);transition:.2s}
+.top-nav-btn:hover{background:rgba(235,227,213,.55);color:var(--earth-600)}
+.top-nav-btn:disabled{opacity:.28;cursor:default}
+[data-theme="dark"] .top-nav-btn{background:rgba(40,40,70,.5);color:var(--earth-400)}
+[data-theme="dark"] .top-nav-btn:hover{background:rgba(50,50,80,.6)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback,createContext,useContext,useMemo} = React;
+
+// ── Store (localStorage-backed) ──
+function loadStore(){
+  try{const d=localStorage.getItem('starsprout');return d?JSON.parse(d):null}catch(e){return null}
+}
+function saveStore(s){
+  try{localStorage.setItem('starsprout',JSON.stringify(s))}catch(e){}
+}
+const initialState={
+  userName:'',userAvatar:'⭐',onboardingDone:false,
+  moodHistory:[],todayChecked:'',streak:0,lastDate:'',
+  mathProgress:[],gardenFlowers:[],
+  codeProgress:[],
+  likedInterests:[],puzzleDone:false,puzzleTrait:null,currentMood:null,theme:'light'
+};
+const StoreCtx=createContext(null);
+function StoreProvider({children}){
+  const [s,setS]=useState(()=>({...initialState,...loadStore()}));
+  const update=useCallback((fn)=>{
+    setS(prev=>{const n=typeof fn==='function'?fn(prev):{...prev,...fn};saveStore(n);return n});
+  },[]);
+  return <StoreCtx.Provider value={{s,update}}>{children}</StoreCtx.Provider>;
+}
+function useStore(){return useContext(StoreCtx)}
+
+// ── Onboarding ──
+const avatars=['⭐','🌙','🌸','🦋','🐣','🌈','🍀','🕊️','🐱','🦊'];
+function Onboarding({onDone}){
+  const {update}=useStore();
+  const [step,setStep]=useState(0);
+  const [name,setName]=useState('');const [avatar,setAvatar]=useState('⭐');
+  const steps=[
+    {t:'欢迎来到星芽 🌱',s:'这里没有考试，没有评判。\n只有一颗陪你发芽的星星。',i:'🌟',d:'你不必成为太阳，做一颗发芽的星星就好。'},
+    {t:'今天感觉如何？',s:'我们可以从记录心情开始。\n不需要很多话，一个表情就够了。',i:'💛',d:'无论快乐或低落，所有情绪都值得被看见。'},
+    {t:'慢慢来',s:'每天只需5分钟。\n学一点数学，写两行代码，或者只是呼吸。',i:'🐢',d:'不急不急，按你自己的节奏来。'}
+  ];
+  if(step===3){
+    return <div className="page" style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100dvh'}}>
+      <div className="card" style={{textAlign:'center',width:'100%'}}>
+        <div style={{fontSize:56,marginBottom:12}}>{avatar}</div>
+        <h2>怎么称呼你？</h2>
+        <p className="sub" style={{marginBottom:12}}>可以是真名，也可以是任何你喜欢的名字</p>
+        <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',gap:6,marginBottom:16}}>
+          {avatars.map(a=><button key={a} onClick={()=>setAvatar(a)} style={{fontSize:24,padding:'4px 8px',borderRadius:12,border:'none',cursor:'pointer',background:a===avatar?'var(--gold-light)':'rgba(245,240,232,.5)',outline:a===avatar?'2px solid var(--gold-light)':'none',transform:a===avatar?'scale(1.15)':'scale(1)',transition:'all .2s'}}>{a}</button>)}
+        </div>
+        <input className="input" style={{textAlign:'center',marginBottom:14}} placeholder="你的名字..." value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&onDone({name:name||'小星星',avatar})} autoFocus/>
+        <button className="btn btn-primary" style={{width:'100%'}} onClick={()=>onDone({name:name||'小星星',avatar})}>开始旅程 🌱</button>
+        <p style={{fontSize:10,color:'var(--earth-400)',marginTop:10,lineHeight:1.5}}>星芽不替代专业心理治疗。如需帮助，可拨打 24h 心理援助热线 <b>400-161-9995</b></p>
+      </div>
+    </div>;
+  }
+  const s=steps[step];
+  return <div className="page" style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100dvh'}}>
+    <div className="card" style={{textAlign:'center',width:'100%'}}>
+      <div className="float" style={{fontSize:64,marginBottom:16}}>{s.i}</div>
+      <h1>{s.t}</h1>
+      <p style={{whiteSpace:'pre-line',color:'var(--earth-500)',marginBottom:8,lineHeight:1.6}}>{s.s}</p>
+      <p style={{fontSize:12,color:'var(--earth-400)',fontStyle:'italic',marginBottom:16}}>{s.d}</p>
+      <div className="dots" style={{marginBottom:16}}>{steps.map((_,i)=><div key={i} className={`dot ${i===step?'active':''}`}/>)}</div>
+      <button className="btn btn-primary" style={{width:'100%'}} onClick={()=>setStep(step+1)}>{step<2?'继续 →':'准备好了 ✨'}</button>
+      {step>0&&<button className="btn btn-ghost" style={{width:'100%',marginTop:8}} onClick={()=>setStep(step-1)}>← 上一步</button>}
+    </div>
+  </div>;
+}
+
+// ── Bottom Nav ──
+const tabs=[
+  {id:'mood',label:'晨露',icon:'🌤️',activeIcon:'☀️'},
+  {id:'math',label:'数语',icon:'🌱',activeIcon:'🌻'},
+  {id:'code',label:'萤火',icon:'✨',activeIcon:'💫'},
+  {id:'path',label:'星图',icon:'🧭',activeIcon:'⭐'},
+  {id:'safe',label:'树洞',icon:'🌳',activeIcon:'🏡'}
+];
+function BottomNav({active,onChange}){
+  return <nav className="bottom-nav">{tabs.map(t=><button key={t.id} className={`nav-item ${active===t.id?'active':''}`} onClick={()=>onChange(t.id)}><span>{active===t.id?t.activeIcon:t.icon}</span><span>{t.label}</span></button>)}</nav>;
+}
+
+// ── Breath Flower ──
+function BreathFlower({onDone}){
+  const phases=['吸气','屏息','呼气','放松'];
+  const durations=[4,7,8,2];
+  const scales=[1.35,1.35,0.8,1];
+  const [phase,setPhase]=useState(0);
+  const [count,setCount]=useState(durations[0]);
+  const [active,setActive]=useState(false);
+  const [cycles,setCycles]=useState(0);
+  const timer=useRef(null);
+  useEffect(()=>{
+    if(!active)return;
+    timer.current=setInterval(()=>{
+      setCount(c=>{
+        if(c<=1){
+          const next=(phase+1)%4;
+          setPhase(next);
+          if(next===0)setCycles(cy=>cy+1);
+          return durations[next];
+        }
+        return c-1;
+      });
+    },1000);
+    return ()=>clearInterval(timer.current);
+  },[active,phase]);
+  useEffect(()=>{
+    if(cycles>=3){setActive(false);setPhase(0);setCount(durations[0]);setCycles(0);onDone&&onDone()}
+  },[cycles]);
+  const start=()=>{setActive(true);setPhase(0);setCount(durations[0]);setCycles(0)};
+  const colors=['#facc15','#f4c542','#e8a850','#c9a96e','#d4a574','#e0b880'];
+  return <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
+    <div style={{position:'relative',width:120,height:120,marginBottom:20,transform:`scale(${active?scales[phase]:1})`,transition:active?`transform ${durations[phase]}s ease-in-out`:'transform .5s ease'}}>
+      {[0,60,120,180,240,300].map((angle,i)=><div key={angle} style={{position:'absolute',top:'50%',left:'50%',width:56,height:24,marginTop:-12,marginLeft:-56,transform:`rotate(${angle}deg)`,transformOrigin:'right center'}}><div style={{width:'100%',height:'100%',borderRadius:99,background:colors[i],opacity:.8,transform:`scaleY(${active&&phase===2?0.6:1})`,transition:'.6s ease'}}/></div>)}
+      <div className="twinkle" style={{position:'absolute',top:'50%',left:'50%',width:36,height:36,marginTop:-18,marginLeft:-18,borderRadius:99,background:'rgba(201,169,110,.3)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18}}>🌼</div>
+    </div>
+    {active?<div style={{textAlign:'center'}}><p style={{fontSize:22,fontWeight:700,color:'var(--gold)',marginBottom:2}}>{phases[phase]}</p><p style={{fontSize:38,fontWeight:300,color:'var(--earth-400)',marginBottom:4}}>{count}</p><p className="sub">第 {Math.min(cycles+1,3)} / 3 轮</p></div>:
+    <div style={{textAlign:'center'}}><p className="sub" style={{marginBottom:12}}>跟着花朵一起呼吸，让焦虑慢慢消散</p><button className="btn btn-primary" onClick={start}>开始呼吸练习 🌸</button></div>}
+  </div>;
+}
+
+// ── Mood Page ──
+const moods=[['😊','开心'],['😌','平静'],['😐','还行'],['😔','低落'],['😢','难过'],['😤','烦躁'],['🥺','委屈'],['😴','疲惫'],['🌈','有希望'],['💪','有力量']];
+const intensityLabels=['很轻微','有一点','中等','比较强','非常强'];
+const warmRepliesByMood={
+  '😢':['嗯，今天有点难。呼吸花园要不要去坐一会儿？','我听到了。这种感觉是真实的，也是暂时的。','想哭就哭吧，眼泪是身体在自我照顾。'],
+  '😔':['今天有点灰，不过没关系。陪你坐坐。','不想动的话，就先不动。我在这儿。','你已经很努力了，即使什么都不做也算。'],
+  '🥺':['那种委屈的感觉，胸口像堵着一团东西。慢慢说。','被误解很难受。你不是无理取闹。','你不需要解释自己。'],
+  '😤':['嗯，那股烦躁像一团火。呼吸花园也许能帮它凉下来一点。','先不急着做任何事，深呼吸三次。','有时候只是需要一个出口。我听着。'],
+  '😴':['累了就歇。不需要今天解决所有问题。','你的身体在告诉你需要休息——听它的。','休息也是一种进步。'],
+  '😐':['一般般的一天。有什么想说的，我在。','有时候"没什么感觉"也是一种感觉。','不急着找方向，先坐一会儿。'],
+  '😌':['这种平静很好。谢谢你把它记录下来。','安安静静的，像湖面一样。'],
+  '😊':['今天有点暖。要不要试一颗小种子？','这份开心值得被记住。'],
+  '🌈':['这片阳光我们记下了 ✨','希望这种感觉能陪你久一点。'],
+  '💪':['嗯，今天有力量。想做点什么吗？','有能量的日子，哪怕只走一小步也很好。'],
+};
+function getWarmReply(mood){
+  const pool=warmRepliesByMood[mood]||warmRepliesByMood['😐'];
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+const lowMoods=['😢','😔','🥺','😤','😴'];
+function isLowMood(m){return lowMoods.includes(m)};
+
+function MoodPage(){
+  const {s,update}=useStore();
+  const [mood,setMood]=useState(null);
+  const [intensity,setIntensity]=useState(3);
+  const [note,setNote]=useState('');
+  const [showBreath,setShowBreath]=useState(false);
+  const [reply,setReply]=useState('');
+  const today=new Date().toDateString();
+  const checked=s.todayChecked===today;
+  const greeting=()=>{const h=new Date().getHours();if(h<6)return'夜深了 🌙';if(h<12)return'早上好 ☀️';if(h<14)return'中午好 🌤️';if(h<18)return'下午好 🌈';return'晚上好 🌆'};
+  const recent=s.moodHistory.slice(0,7);
+  const checkin=()=>{
+    if(!mood)return;
+    update(prev=>{
+      const newHist=[{emoji:mood,intensity,note,ts:Date.now()},...prev.moodHistory].slice(0,365);
+      const yest=new Date(Date.now()-864e5).toDateString();
+      const newStreak=prev.lastDate===yest?prev.streak+1:1;
+      return {...prev,moodHistory:newHist,todayChecked:today,streak:newStreak,lastDate:today,currentMood:mood};
+    });
+    setReply(getWarmReply(mood));
+  };
+  return <div className="page fade-in" key="mood">
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:20}}>
+      <div><p style={{fontSize:15,color:'var(--earth-500)'}}>{greeting()}</p><h1 style={{display:'flex',alignItems:'center',gap:8,marginBottom:0}}><span>{s.userAvatar}</span>{s.userName||'小星星'}</h1></div>
+      {s.streak>0&&<div style={{display:'flex',alignItems:'center',gap:4,background:'#fefce8',padding:'4px 10px',borderRadius:99,fontSize:13,fontWeight:600,color:'#eab308'}}>🔥 {s.streak} 天</div>}
+    </div>
+    {!checked?<div className="card">
+      <h2>此刻心情如何？</h2><p className="sub" style={{marginBottom:12}}>选一个最能表达你的表情</p>
+      <div className="grid-5" style={{marginBottom:12}}>{moods.map(([e,l])=><button key={e} className={`emoji-btn ${mood===e?'active':''}`} onClick={()=>setMood(e)}>{e}<span>{l}</span></button>)}</div>
+      {mood&&<div>
+        <p style={{fontSize:11,color:'var(--earth-400)',marginBottom:6}}>感觉有多强烈？</p>
+        <div style={{display:'flex',gap:4,marginBottom:10}}>{intensityLabels.map((l,i)=><button key={i} className={`intensity-btn ${intensity===i+1?'active':''}`} onClick={()=>setIntensity(i+1)}>{l}</button>)}</div>
+        <textarea className="input" style={{resize:'none',height:56,marginBottom:10}} placeholder="想说点什么？（可以跳过）" value={note} onChange={e=>setNote(e.target.value)} maxLength={200}/>
+        <button className="btn btn-primary" style={{width:'100%'}} onClick={checkin}>记录这一刻 ☁️</button>
+      </div>}
+    </div>:
+    <div className="card">
+      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}><span style={{fontSize:28}}>{s.moodHistory[0]?.emoji||'😌'}</span><div><p style={{fontSize:14,fontWeight:500}}>今天的心情已记录</p><p className="sub">你已经连续记录了 {s.streak} 天</p></div></div>
+      {recent.length>1&&<div style={{display:'flex',alignItems:'center',gap:4,paddingTop:10,borderTop:'1px solid var(--earth-100)'}}><span className="sub">最近一周：</span>{recent.map((m,i)=><span key={i} style={{fontSize:18}} title={m.emoji}>{m.emoji}</span>)}<span className="sub" style={{marginLeft:4}}>均强 {Math.round(recent.reduce((a,m)=>a+m.intensity,0)/recent.length)}/5</span></div>}
+    </div>}
+    {reply&&<div className="card" style={{borderLeft:'4px solid var(--calm-green)'}}><p style={{fontSize:13,fontStyle:'italic',color:'var(--earth-600)',lineHeight:1.6}}>"{reply}"</p><p className="sub">— 你的暖伴 🌟</p></div>}
+    {!showBreath?<div className="card" style={{cursor:'pointer'}} onClick={()=>setShowBreath(true)}>
+      <div style={{display:'flex',alignItems:'center',gap:10}}><span style={{fontSize:28}}>🌸</span><div><h2 style={{marginBottom:0}}>呼吸练习</h2><p className="sub">4-7-8 呼吸法，帮焦虑悄悄离开</p></div><button className="btn btn-primary" style={{marginLeft:'auto'}}>开始</button></div>
+    </div>:<div className="card" style={{padding:'30px 20px'}}><BreathFlower onDone={()=>setShowBreath(false)}/></div>}
+    <div className="card"><h2>感恩一瞬 💫</h2><p className="sub" style={{marginBottom:8}}>今天有什么微小却让你感到温暖的事？</p><textarea className="input" style={{resize:'none',height:48}} placeholder="比如：窗外有阳光 / 喝到了好喝的茶..." maxLength={100}/></div>
+    {s.moodHistory.length>0&&<div className="card"><h2>情绪年轮 🪵</h2><p className="sub" style={{marginBottom:10}}>一圈一圈，都是你走过的日子</p><div style={{display:'flex',justifyContent:'center',alignItems:'center',minHeight:120}}>
+      <div style={{position:'relative',width:120,height:120}}>
+        {s.moodHistory.slice(0,Math.min(s.moodHistory.length,24)).map((m,i)=>{const r=52-i*2;const a=(i/s.moodHistory.length)*0.7;return r>6?<div key={i} style={{position:'absolute',top:'50%',left:'50%',width:r*2,height:r*2,marginTop:-r,marginLeft:-r,borderRadius:'50%',border:'3px solid',borderColor:m.emoji==='😢'||m.emoji==='😔'?'rgba(180,160,160,'+(1-i*0.03)+')':m.emoji==='😊'||m.emoji==='🌈'?'rgba(201,169,110,'+(0.3+i*0.02)+')':'rgba(160,180,170,'+(0.5-i*0.015)+')',opacity:1-a}}/>:null})}
+        <div style={{position:'absolute',top:'50%',left:'50%',width:16,height:16,marginTop:-8,marginLeft:-8,borderRadius:'50%',background:'var(--earth-400)'}}/>
+      </div></div><p style={{textAlign:'center',fontSize:10,color:'var(--earth-400)',marginTop:8}}>最内圈是今天，最外圈是你最早的记录</p></div>}
+  </div>;
+}
+
+// ── Math Page ──
+const concepts=[
+  {id:'vi',t:'什么是向量？',d:'向量就像有方向的箭头，指向你想去的地方...',cat:'linear',diff:1,icon:'🏹',color:'#f4c2c2'},
+  {id:'va',t:'向量的加法',d:'两条路合在一起，就像把两个箭头首尾相接...',cat:'linear',diff:1,icon:'➕',color:'#d4c5e2'},
+  {id:'mi',t:'矩阵初识',d:'矩阵是数字排列成的方阵，像一个整齐的花圃...',cat:'linear',diff:2,icon:'🔲',color:'#b8d8ba'},
+  {id:'li',t:'极限的感觉',d:'无限靠近却不触碰，就像靠近河岸看自己的倒影...',cat:'calc',diff:1,icon:'🌊',color:'#b5d8e8'},
+  {id:'di',t:'变化的速度',d:'导数告诉你每一刻事物在如何变化...',cat:'calc',diff:2,icon:'🏃',color:'#fad4c0'},
+  {id:'ii',t:'积分的魔法',d:'把无数个小片段拼成完整的画面...',cat:'calc',diff:3,icon:'🧩',color:'#f7e8a0'},
+];
+const quizzes={
+  vi:{q:'向量最像下面哪个东西？',o:['一个数字','一个有方向的箭头','一个圆','一条直线'],c:1,h:'想想看，什么东西既有大小又有方向？'},
+  va:{q:'两个向量相加，结果会怎样？',o:['变得更短','首尾相接形成新向量','变成一个点','消失'],c:1,h:'想象你在走路——先走一条路，再走另一条路，最终你在哪里？'},
+  mi:{q:'一个 2×2 的矩阵有多少个数字？',o:['2个','3个','4个','6个'],c:2,h:'2×2 = 行数 × 列数 = ?'},
+  li:{q:'"极限"描述的是什么？',o:['最大值','无限接近某个值的趋势','最小值','平均值'],c:1,h:'不是到达，而是"越来越靠近"...'},
+  di:{q:'导数告诉我们什么？',o:['总数','变化的快慢','起点和终点','中间值'],c:1,h:'如果你在开车，导数是你的速度表。'},
+  ii:{q:'积分和什么最像？',o:['计算速度','把碎片拼成整体','测量角度','找最大值'],c:1,h:'就像把下雨的每一滴水收集起来，看总共有多少水...'},
+};
+const stageInfo={seed:{l:'种子',i:'🌰'},sprout:{l:'发芽',i:'🌱'},bud:{l:'花苞',i:'🌷'},flower:{l:'开花',i:'🌸'}};
+
+function MathPage(){
+  const {s,update}=useStore();
+  const [active,setActive]=useState(null);
+  const [answer,setAnswer]=useState(null);
+  const [hint,setHint]=useState(false);
+  const [result,setResult]=useState(null);
+  const getProg=id=>s.mathProgress.find(p=>p.conceptId===id);
+  const handleAns=(idx)=>{
+    setAnswer(idx);
+    const q=quizzes[active];
+    if(idx===q.c){
+      setResult('correct');
+      setTimeout(()=>{
+        const prog=getProg(active);
+        const st=prog?.stage||'seed';
+        const next=st==='seed'?'sprout':st==='sprout'?'bud':'flower';
+        update(prev=>{
+          const exist=prev.mathProgress.findIndex(p=>p.conceptId===active);
+          let newProg=[...prev.mathProgress];
+          const entry={conceptId:active,stage:next,attempts:(prog?.attempts||0)+1,completedAt:next==='flower'?Date.now():undefined};
+          if(exist>=0)newProg[exist]=entry;else newProg.push(entry);
+          const newFlowers=next==='flower'?[...prev.gardenFlowers,['🌷','🌻','🌺','🦋','🐝','💐'][Math.floor(Math.random()*6)]]:prev.gardenFlowers;
+          return {...prev,mathProgress:newProg,gardenFlowers:newFlowers};
+        });
+        setResult(null);setAnswer(null);setActive(null);setHint(false);
+      },1500);
+    }else{
+      setResult('incorrect');
+      setTimeout(()=>{setResult(null);setAnswer(null);setHint(true)},1200);
+    }
+  };
+  return <div className="page fade-in" key="math">
+    <h1 style={{marginBottom:4}}>数语·数学花园 🌻</h1><p className="sub" style={{marginBottom:16}}>每学懂一个概念，你的花园就开一朵花</p>
+    <div className="card"><div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}><span style={{fontSize:28}}>🏡</span><div><h2 style={{marginBottom:0}}>你的花园</h2><p className="sub">已种下 {s.mathProgress.length} 颗种子 · {s.gardenFlowers.length} 朵花盛开</p></div></div>
+      <div style={{background:'linear-gradient(180deg,#7ba7c918,#8fbc8f18)',borderRadius:16,padding:16,minHeight:60,display:'flex',alignItems:'center',justifyContent:'center',flexWrap:'wrap',gap:2}}>
+        {s.gardenFlowers.length===0?<span className="sub">一片等待播种的土壤...</span>:s.gardenFlowers.map((d,i)=><span key={i} className="float" style={{fontSize:22,animationDelay:i*0.2+'s'}}>{d}</span>)}
+      </div>
+    </div>
+    <h2>今天的种子</h2>
+    <div className="grid-2">{concepts.map(c=>{const p=getProg(c.id);const st=stageInfo[p?.stage||'seed'];return <div key={c.id} className="card" style={{padding:14,cursor:'pointer'}} onClick={()=>{setActive(c.id);setAnswer(null);setHint(false);setResult(null)}}>
+      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:4}}><span style={{fontSize:22}}>{c.icon}</span><span style={{fontSize:10,color:'var(--earth-400)',fontStyle:'italic'}}>{c.cat==='linear'?'线代':'微积分'}</span></div>
+      <h3 style={{fontSize:13,marginBottom:2}}>{c.t}</h3><div style={{display:'flex',alignItems:'center',gap:4}}><span>{st.i}</span><span style={{fontSize:11,color:'var(--earth-400)'}}>{st.l}</span></div>
+    </div>})}</div>
+    {active&&<div className="modal-overlay" onClick={()=>{if(!result){setActive(null);setHint(false)}}}><div className="modal" onClick={e=>e.stopPropagation()}>
+      {result?<div style={{textAlign:'center',padding:'20px 0'}}><div style={{fontSize:48,marginBottom:8}}>{result==='correct'?'🌸':'💛'}</div><p style={{fontSize:18,fontWeight:600}}>{result==='correct'?'这颗种子今天开了一瓣 🌱':'这次没开，但我们看到了变化——这就是探索的一部分'}</p></div>:
+      <div>
+        <div style={{marginBottom:12,paddingBottom:12,borderBottom:'1px solid var(--earth-100)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:4}}><span style={{fontSize:24}}>{concepts.find(x=>x.id===active)?.icon}</span><h3 style={{marginBottom:0}}>{concepts.find(x=>x.id===active)?.t}</h3></div>
+          <p style={{fontSize:13,color:'var(--earth-500)'}}>{concepts.find(x=>x.id===active)?.d}</p>
+        </div>
+        <p style={{fontSize:14,fontWeight:500,marginBottom:10}}>{quizzes[active]?.q}</p>
+        {quizzes[active]?.o.map((o,i)=><button key={i} style={{width:'100%',textAlign:'left',padding:'10px 14px',borderRadius:12,fontSize:13,marginBottom:6,cursor:'pointer',border:'none',fontFamily:'inherit',background:answer===i?'var(--gold-light)':'rgba(245,240,232,.5)',color:answer===i?'var(--gold)':'var(--earth-600)',fontWeight:answer===i?600:400,transition:'all .2s'}} onClick={()=>handleAns(i)}>{o}</button>)}
+        {hint&&<div style={{fontSize:12,color:'var(--calm-blue)',background:'#7ba7c910',padding:10,borderRadius:12,marginTop:8}}>💡 {quizzes[active]?.h}</div>}
+        <button className="btn btn-ghost" style={{width:'100%',marginTop:8,fontSize:12}} onClick={()=>{setActive(null);setHint(false);setAnswer(null)}}>下次再来</button>
+      </div>}
+    </div></div>}
+    <p className="sub" style={{textAlign:'center',marginTop:20}}>今天走到这里已经很好了 🌱</p>
+  </div>;
+}
+
+// ── Code Page ──
+const sparks=[
+  {id:'hs',t:'你好，星星',d:'让计算机对你说 Hello, Star! —— 你的第一行代码',s:1,icon:'👋',tag:'入门',code:'print("Hello, Star!")',out:'',simOutput:'Hello, Star!'},
+  {id:'st',t:'画一颗星星',d:'用代码画出你的第一颗星星',s:1,icon:'⭐',tag:'图形',code:'for i in range(5):\n    print("  "*(5-i)+"* "*(i+1))',simOutput:'    * \n   * * \n  * * * \n * * * * \n* * * * *'},
+  {id:'cm',t:'心情调色盘',d:'根据心情生成不同的颜色',s:2,icon:'🎨',tag:'条件',code:'mood = "happy"  # 试试改成 sad, calm, excited\n\nif mood == "happy":\n    color = "🌻 金黄色"\nelif mood == "sad":\n    color = "🌧️ 蓝色"\nelif mood == "calm":\n    color = "🍃 绿色"\nelse:\n    color = "🌈 彩虹色"\n\nprint("今天的颜色是:", color)',simOutput:'今天的颜色是: 🌻 金黄色'},
+  {id:'cs',t:'数星星',d:'让计算机帮你数数——从 1 数到你的幸运数字',s:2,icon:'🔢',tag:'循环',code:'lucky_number = 7\n\nfor i in range(1, lucky_number+1):\n    print("🌟"*i)\n    print(f"第 {i} 颗星星亮起来了...")\n\nprint("\\n一共", lucky_number, "颗星星在闪烁 ✨")',simOutput:'🌟\n第 1 颗星星亮起来了...\n🌟🌟\n第 2 颗星星亮起来了...\n...\n一共 7 颗星星在闪烁 ✨'},
+  {id:'gb',t:'建造小花园',d:'用代码设计属于你的数学花园一角',s:3,icon:'🏗️',tag:'函数',code:'def create_garden(flowers):\n    print("🏡 === 我的小花园 === 🏡")\n    for f in flowers:\n        print(f"|  {f}  |")\n    print("="*14)\n\nflowers = ["🌻","🌷","🌸","🌺"]\ncreate_garden(flowers)\n# 试试 flowers.append("🌼")',simOutput:'🏡 === 我的小花园 === 🏡\n|  🌻  |\n|  🌷  |\n|  🌸  |\n|  🌺  |\n=============='},
+  {id:'mt',t:'心情记录器',d:'创建一个简单的心情追踪工具',s:3,icon:'📓',tag:'类',code:'class MoodDiary:\n    def __init__(self, name):\n        self.name = name\n        self.entries = []\n    \n    def add(self, mood, note):\n        self.entries.append({"m":mood,"n":note})\n        print(f"✅ 已记录: {mood} - {note}")\n    \n    def show(self):\n        print(f"\\n📖 {self.name} 的心情日记:")\n        for i,e in enumerate(self.entries,1):\n            print(f"  {i}. {e[\'m\']} {e[\'n\']}")\n\ndiary = MoodDiary("小星星")\ndiary.add("😊","今天阳光很好")\ndiary.add("😌","学会了写代码")\ndiary.show()',simOutput:'✅ 已记录: 😊 - 今天阳光很好\n✅ 已记录: 😌 - 学会了写代码\n\n📖 小星星 的心情日记:\n  1. 😊 今天阳光很好\n  2. 😌 学会了写代码'},
+];
+
+const blockTypes=[{type:'print',label:'说点什么',icon:'💬',color:'#8fbc8f',template:'print("__")',fields:[{label:'要说的话',def:'Hello, Star!'}]},{type:'var',label:'存个东西',icon:'📦',color:'#7ba7c9',template:'__ = __',fields:[{label:'名字',def:'x'},{label:'值',def:'5'}]},{type:'for',label:'重复N次',icon:'🔁',color:'#d4c5e2',template:'for __ in range(__):\n    print(__)',fields:[{label:'变量',def:'i'},{label:'次数',def:'3'},{label:'打印',def:'🌟'}]},{type:'if',label:'如果...就',icon:'🔀',color:'#fad4c0',template:'if __:\n    print(__)',fields:[{label:'条件',def:'True'},{label:'说的话',def:'条件成立!'}]},{type:'comment',label:'写备忘',icon:'📝',color:'#b8a9c9',template:'# __',fields:[{label:'备忘',def:'这里是一个备注'}]},{type:'emotion',label:'心情泡泡',icon:'💭',color:'#f4c2c2',template:'mood = "__"\nif mood == "happy":\n    print("🌻 今天是金黄色!")\nelif mood == "sad":\n    print("🌧️ 今天是蓝色...")\nelse:\n    print("🌈 今天是彩虹色!")',fields:[{label:'心情',def:'happy'},{label:'',def:'',slotless:true}]}];
+function CodePage(){
+  const {s}=useStore();
+  const [mode,setMode]=useState('block');
+  const [blocks,setBlocks]=useState([]);const [bid,setBid]=useState(0);
+  const [showCode,setShowCode]=useState(false);
+  const [active,setActive]=useState(null);const [code,setCode]=useState('');const [out,setOut]=useState('');
+  const addBlock=t=>{const bt=blockTypes.find(b=>b.type===t);const f=bt.fields.filter(f=>!f.slotless).map(f=>f.def);setBlocks(p=>[...p,{id:bid,type:t,fields:f}]);setBid(i=>i+1)};
+  const upField=(id,fi,v)=>{setBlocks(p=>p.map(b=>b.id===id?{...b,fields:b.fields.map((f,i)=>i===fi?v:f)}:b))};
+  const rmBlock=id=>{setBlocks(p=>p.filter(b=>b.id!==id))};
+  const genCode=()=>blocks.map(b=>{const bt=blockTypes.find(x=>x.type===b.type);let c=bt.template;b.fields.forEach(v=>{c=c.replace('__',v)});return c}).join('\n');
+  const compiled=genCode();
+  const runBlocks=()=>{if(blocks.length===0){setOut('还没有积木，拼几个试试吧 🧱');return}setOut('✨ 运行完成！切换到「⌨️ 文本」模式可以看到完整代码')};
+  const open=s=>{setActive(s);setCode(s.code);setOut('')};
+  const run=()=>{if(!active)return;setOut(active.simOutput||'运行完成 ✅')};
+  const reset=()=>{if(active){setCode(active.code);setOut('')}};
+  return <div className="page fade-in" key="code">
+    <h1 style={{marginBottom:4}}>萤火·代码星火 ✨</h1><p className="sub" style={{marginBottom:12}}>每一行代码都是一颗星星，聚在一起就是银河</p>
+    <div className="card" style={{padding:6}}><div style={{display:'flex',background:'var(--earth-100)',borderRadius:12,padding:4}}>
+      {[{v:'block',l:'🧱 积木',h:'像搭乐高一样编程，没有语法错误'},{v:'text',l:'⌨️ 文本',h:'直接写代码——你已经准备好了！'}].map(({v,l,h})=><button key={v} onClick={()=>{setMode(v);setShowCode(false)}}
+        style={{flex:1,padding:'8px 4px',border:'none',borderRadius:10,fontSize:12,fontWeight:mode===v?600:400,cursor:'pointer',fontFamily:'inherit',background:mode===v?'#fff':'transparent',color:mode===v?'var(--gold)':'var(--earth-400)',boxShadow:mode===v?'0 1px 4px rgba(0,0,0,.06)':'none',transition:'.2s',lineHeight:1.3}} title={h}>{l}</button>)}
+    </div></div>
+    {mode==='block'?<div>
+      <div className="card"><h2>积木工具箱 🧰</h2><p className="sub" style={{marginBottom:10}}>点击积木把它放进你的构建区</p>
+        <div style={{display:'flex',flexWrap:'wrap',gap:8}}>{blockTypes.map(bt=><button key={bt.type} onClick={()=>addBlock(bt.type)}
+          style={{display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:14,border:'none',cursor:'pointer',fontFamily:'inherit',fontSize:12,background:bt.color+'22',color:bt.color,fontWeight:500,transition:'.2s'}}>
+          <span style={{fontSize:18}}>{bt.icon}</span>{bt.label}</button>)}</div>
+      </div>
+      <div className="card"><h2>你的构建区 🏗️ {blocks.length>0&&<span style={{fontSize:11,color:'var(--earth-400)',marginLeft:8}}>{blocks.length} 块积木</span>}</h2>
+        {blocks.length===0?<div style={{textAlign:'center',padding:24,color:'var(--earth-300)'}}><span style={{fontSize:36,display:'block',marginBottom:8}}>🧱</span><p className="sub">从上面的工具箱选几块积木试试吧！</p></div>:
+        <div style={{display:'flex',flexDirection:'column',gap:8}}>{blocks.map(b=>{const bt=blockTypes.find(x=>x.type===b.type);
+          return <div key={b.id} style={{background:bt.color+'12',border:'1px solid '+bt.color+'22',borderRadius:14,padding:'10px 12px',display:'flex',alignItems:'center',flexWrap:'wrap',gap:6}}>
+            <span style={{fontSize:18}}>{bt.icon}</span><span style={{fontSize:11,fontWeight:600,color:bt.color,marginRight:4}}>{bt.label}</span>
+            {bt.fields.filter(f=>!f.slotless).map((f,fi)=><span key={fi} style={{display:'inline-flex',alignItems:'center',gap:2}}>{fi>0&&<span style={{fontSize:10,color:'var(--earth-300)'}}>,</span>}<input value={b.fields[fi]} onChange={e=>upField(b.id,fi,e.target.value)}
+              style={{width:Math.max(b.fields[fi].length*12+30,60),padding:'3px 8px',borderRadius:8,border:'1px solid '+bt.color+'33',fontSize:12,fontFamily:'inherit',background:'rgba(255,255,255,.6)',color:'var(--earth-700)',outline:'none'}}/></span>)}
+            <button onClick={()=>rmBlock(b.id)} style={{marginLeft:'auto',border:'none',background:'none',cursor:'pointer',fontSize:14,color:'var(--earth-300)',padding:'2px 6px',borderRadius:99}}>✕</button>
+          </div>})}</div>}
+        {blocks.length>0&&<div style={{display:'flex',gap:8,marginTop:12}}>
+          <button className="btn btn-primary" style={{flex:1}} onClick={()=>setShowCode(!showCode)}>{showCode?'🔽 隐藏对照':'🔍 积木→代码 对照'}</button>
+          <button className="btn btn-ghost" style={{flex:1}} onClick={()=>{setBlocks([]);setShowCode(false)}}>清空 🔄</button>
+        </div>}
+        {showCode&&blocks.length>0&&<div style={{marginTop:10}}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr auto 1fr',gap:8,alignItems:'start'}}>
+            <div style={{background:'var(--earth-50)',borderRadius:12,padding:10}}>{blocks.map(b=>{const bt=blockTypes.find(x=>x.type===b.type);return <div key={b.id} style={{fontSize:11,color:bt.color,padding:'2px 0'}}>{bt.icon} {bt.label}</div>})}</div>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',paddingTop:8}}>{blocks.map((_,i)=><span key={i} style={{fontSize:14,lineHeight:'22px'}}>→</span>)}</div>
+            <div style={{background:'#1f1b16',borderRadius:12,padding:10,fontFamily:'Cascadia Code,monospace',fontSize:11,color:'#a7f3a7',whiteSpace:'pre-wrap',lineHeight:1.5,minHeight:40}}>{compiled}</div>
+          </div>
+          <button className="btn btn-primary" style={{width:'100%',marginTop:10}} onClick={runBlocks}>运行 ▶️</button>
+          {out&&<div className="output-box" style={{marginTop:8}}>{out}</div>}
+        </div>}
+      </div>
+    </div>:
+    <div>
+      <div className="card"><div style={{display:'flex',justifyContent:'space-around',textAlign:'center',fontSize:12}}>
+        <div><div style={{fontSize:22}}>📋</div><div style={{color:'var(--gold)',fontWeight:500}}>临摹</div><div style={{color:'var(--earth-400)',fontSize:11}}>复制看效果</div></div>
+        <div><div style={{fontSize:22}}>✏️</div><div style={{color:'var(--earth-400)',fontWeight:500}}>改编</div><div style={{color:'var(--earth-400)',fontSize:11}}>改一个参数</div></div>
+        <div><div style={{fontSize:22}}>🚀</div><div style={{color:'var(--earth-400)',fontWeight:500}}>创作</div><div style={{color:'var(--earth-400)',fontSize:11}}>加自己的想法</div></div>
+      </div></div>
+      <div className="grid-2">{sparks.map(s=><div key={s.id} className="card" style={{padding:14,cursor:'pointer'}} onClick={()=>open(s)}>
+        <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:6}}><span style={{fontSize:22}}>{s.icon}</span><span className="tag" style={{background:s.s===1?'#8fbc8f20':s.s===2?'#7ba7c920':'#b8a9c920',color:s.s===1?'var(--calm-green)':s.s===2?'var(--calm-blue)':'var(--calm-purple)'}}>{s.tag}</span></div>
+        <h3 style={{fontSize:13,marginBottom:2}}>{s.t}</h3><p style={{fontSize:11,color:'var(--earth-400)',lineHeight:1.5,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{s.d}</p>
+      </div>)}</div>
+      {active&&<div className="modal-overlay" onClick={()=>setActive(null)}><div className="modal" onClick={e=>e.stopPropagation()}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}><span style={{fontSize:24}}>{active.icon}</span><div><h3 style={{marginBottom:0}}>{active.t}</h3><p className="sub">{active.d}</p></div></div>
+        <textarea className="code-editor" style={{resize:'vertical',minHeight:Math.min(code.split('\n').length*22+24,240)}} value={code} onChange={e=>setCode(e.target.value)} spellCheck={false}/>
+        <div style={{display:'flex',gap:8,margin:'10px 0'}}><button className="btn btn-primary" style={{flex:1}} onClick={run}>运行 ▶️</button><button className="btn btn-ghost" style={{flex:1}} onClick={reset}>重置 🔄</button></div>
+        {out&&<div className="output-box">{out}</div>}
+        <p style={{fontSize:10,color:'var(--earth-300)',textAlign:'center',marginTop:8}}>每条路都值得走一走——每次运行都是一次探索 🌟</p>
+      </div></div>}
+    </div>}
+    <p className="sub" style={{textAlign:'center',marginTop:20}}>走到哪儿了都算走了。下次从这里继续就好 ✨</p>
+  </div>;
+}
+
+// ── Path Page ──
+const interestCards=[
+  {id:'ds',t:'数据科学',d:'从数字中发现故事和规律。你学到的数学会成为你的超能力！',i:'📊',cat:'科技',s:'你可能会帮环保组织分析气候数据，或者帮游戏公司理解玩家的喜好...'},
+  {id:'ux',t:'UI / UX 设计',d:'让应用变得好看又好用。如果你喜欢温暖的颜色和舒服的交互...',i:'🎨',cat:'设计',s:'你设计的页面会被成千上万的人看到、触摸、使用。每一处细节都出自你手...'},
+  {id:'ai',t:'人工智能',d:'教计算机学习。就像教一个新朋友慢慢理解这个世界',i:'🤖',cat:'科技',s:'你训练的模型可能帮医生更快发现疾病，或者让盲人"看见"眼前的画面...'},
+  {id:'ed',t:'教育科技',d:'把知识变得有趣。帮更多像你一样的人找到学习的乐趣',i:'📚',cat:'教育',s:'你设计的工具让成千上万害怕数学的学生第一次感受到"我也可以"...'},
+  {id:'cc',t:'创意编程',d:'用代码画画、做音乐、生成艺术作品。代码是你的画笔',i:'🎵',cat:'艺术',s:'你写的代码生成音乐、动画和交互艺术，在美术馆里展出...'},
+  {id:'mh',t:'心理健康科技',d:'用科技帮助和你经历相似的人。你懂得那种感受',i:'💚',cat:'健康',s:'你开发的 App 成为深夜失眠者的慰藉，帮无数人渡过难关...'},
+  {id:'gd',t:'游戏开发',d:'创造让人沉浸的世界。你定规则，你编故事，你给玩家带来快乐',i:'🎮',cat:'娱乐',s:'你创造的世界里有冒险、有友情、有你设计的每一片森林和每一次日落...'},
+  {id:'et',t:'环保科技',d:'用代码守护地球。让数据帮助大自然',i:'🌍',cat:'公益',s:'你的算法优化城市公交路线，减少碳排放；你的传感器网络监测森林火情...'},
+];
+const puzzleQs=[
+  {q:'看到一个乱糟糟的衣柜，你会？',o:[{t:'按颜色分类整理',tr:'秩序感'},{t:'设计一个新收纳系统',tr:'创造力'},{t:'先整理一部分，累了就歇',tr:'务实'}]},
+  {q:'学习新东西时，你更喜欢？',o:[{t:'看图片和视频',tr:'视觉型'},{t:'听别人讲解',tr:'听觉型'},{t:'自己动手试',tr:'实践型'}]},
+  {q:'周末早上醒来，你第一个想法是？',o:[{t:'今天想做点什么',tr:'目标导向'},{t:'就躺着，享受安静',tr:'内省型'},{t:'看看朋友们在干嘛',tr:'社交型'}]},
+];
+const traitInsights={秩序感:'你喜欢有条理的工作方式，数据科学或后端开发可能特别适合你。',创造力:'你的想象力是宝藏——UI设计、创意编程、游戏开发都在等你！',务实:'你脚踏实地，教育科技或环保科技需要你这样能一步步把事情做好的人。',视觉型:'你喜欢通过视觉获取信息，前端开发和数据可视化会让你如鱼得水。',实践型:'你不喜欢空谈，"做中学"是你最好的方式。交互式编程和原型设计特别适合你。',目标导向:'你有内在驱动力，适合需要独立规划和推动的项目。',内省型:'你善于思考，人工智能和算法设计需要你这种深度思考的习惯。',社交型:'你关心他人，心理健康科技或教育科技让你把这种关心变成力量。',听觉型:'你对声音敏感，播客技术或音乐编程可能会点燃你的热情。'};
+
+function PathPage(){
+  const {s,update}=useStore();
+  const [cardIdx,setCardIdx]=useState(0);
+  const [swiping,setSwiping]=useState(null);
+  const [scenario,setScenario]=useState(null);
+  const [showPuz,setShowPuz]=useState(false);
+  const [puzStep,setPuzStep]=useState(0);
+  const [puzAns,setPuzAns]=useState([]);
+  const [puzResult,setPuzResult]=useState(null);
+  const done=cardIdx>=interestCards.length;
+  const swipe=(dir)=>{
+    setSwiping(dir);
+    if(dir==='right')update(prev=>({...prev,likedInterests:[...prev.likedInterests,interestCards[cardIdx].id]}));
+    setTimeout(()=>{if(cardIdx<interestCards.length-1)setCardIdx(cardIdx+1);setSwiping(null)},300);
+  };
+  const answerPuz=(tr)=>{
+    const na=[...puzAns,tr];setPuzAns(na);
+    if(puzStep<puzzleQs.length-1)setPuzStep(puzStep+1);
+    else{
+      const cnt={};na.forEach(t=>cnt[t]=(cnt[t]||0)+1);
+      const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0][0];
+      setPuzResult(top);update(prev=>({...prev,puzzleDone:true,puzzleTrait:top}));
+    }
+  };
+  return <div className="page fade-in" key="path">
+    <h1 style={{marginBottom:4}}>方向探索 🧭</h1><p className="sub" style={{marginBottom:16}}>不知道该往哪走？我们来慢慢探索</p>
+    <div className="card">
+      <h2>兴趣探索卡{s.likedInterests.length>0&&<span style={{color:'var(--gold)',fontWeight:400,marginLeft:4,fontSize:13}}>· 已收藏 {s.likedInterests.length} 个</span>}</h2>
+      <p className="sub" style={{marginBottom:12}}>左滑 = "不太感兴趣"，右滑 = "有意思！"</p>
+      {done?<div style={{textAlign:'center',padding:'24px 0'}}><div className="float" style={{fontSize:48,marginBottom:10}}>🌟</div><p style={{fontWeight:500,marginBottom:4}}>探索完成！</p><p className="sub" style={{marginBottom:10}}>{s.likedInterests.length===0?'暂时没有心动的方向，没关系——会遇到的':`你标注了 ${s.likedInterests.length} 个感兴趣的方向`}</p><button className="btn btn-ghost" style={{color:'var(--gold)',fontSize:13}} onClick={()=>setCardIdx(0)}>再来一轮 🔄</button></div>:
+      <div>
+        <div style={{background:'#fff',borderRadius:16,padding:18,border:'1px solid var(--earth-100)',marginBottom:14,transform:swiping?`translateX(${swiping==='right'?60:-60}px) rotate(${swiping==='right'?6:-6}deg)`:'none',opacity:swiping?0:1,transition:'.3s ease'}}>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}><span style={{width:44,height:44,borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,background:'var(--gold-light)'}}>{interestCards[cardIdx].i}</span><div><h3 style={{marginBottom:0,fontSize:14}}>{interestCards[cardIdx].t}</h3><span className="sub">{interestCards[cardIdx].cat}</span></div></div>
+          <p style={{fontSize:13,color:'var(--earth-600)',lineHeight:1.6,marginBottom:8}}>{interestCards[cardIdx].d}</p>
+          <button style={{fontSize:12,color:'var(--calm-blue)',background:'none',border:'none',cursor:'pointer'}} onClick={()=>setScenario(cardIdx)}>如果选择了这条路... →</button>
+        </div>
+        <div style={{display:'flex',justifyContent:'center',gap:16}}>
+          <button onClick={()=>swipe('left')} style={{width:52,height:52,borderRadius:99,border:'none',fontSize:24,cursor:'pointer',background:'var(--earth-100)',transition:'all .2s'}}>👈</button>
+          <button onClick={()=>swipe('right')} style={{width:52,height:52,borderRadius:99,border:'none',fontSize:24,cursor:'pointer',background:'var(--gold-light)',transition:'all .2s'}}>👉</button>
+        </div>
+      </div>}
+    </div>
+    {scenario!==null&&<div className="modal-overlay" onClick={()=>setScenario(null)}><div className="modal" style={{textAlign:'center'}} onClick={e=>e.stopPropagation()}>
+      <div style={{fontSize:40,marginBottom:10}}>🔮</div><p style={{fontSize:13,lineHeight:1.7,color:'var(--earth-600)',marginBottom:12}}>{interestCards[scenario].s}</p>
+      <button className="btn btn-ghost" style={{fontSize:12}} onClick={()=>setScenario(null)}>关闭</button>
+    </div></div>}
+    <div className="card"><h2>能力拼图 🧩</h2>
+      {!s.puzzleDone&&!showPuz?<div style={{textAlign:'center'}}><p className="sub" style={{marginBottom:10}}>通过几个轻松的问题，帮你发现自己的思维偏好（不是考试！）</p><button className="btn btn-primary" onClick={()=>setShowPuz(true)}>开始拼图 ⭐</button></div>:
+      showPuz&&!puzResult?<div>
+        <p className="sub">问题 {puzStep+1}/{puzzleQs.length}</p>
+        <p style={{fontSize:14,fontWeight:500,margin:'6px 0 10px'}}>{puzzleQs[puzStep].q}</p>
+        {puzzleQs[puzStep].o.map((o,i)=><button key={i} style={{width:'100%',textAlign:'left',padding:'10px 14px',borderRadius:12,fontSize:13,marginBottom:6,cursor:'pointer',border:'none',fontFamily:'inherit',background:'rgba(245,240,232,.5)',color:'var(--earth-600)',transition:'.2s'}} onClick={()=>answerPuz(o.tr)}>{o.t}</button>)}
+      </div>:
+      puzResult?<div style={{textAlign:'center'}}><div style={{fontSize:40,marginBottom:8}}>💡</div><p style={{fontSize:13,lineHeight:1.7,color:'var(--earth-600)',marginBottom:10}}>{traitInsights[puzResult]||'你的思维偏好很独特——这意味着你有能力在不同领域找到自己的位置 🌱'}</p><button className="btn btn-ghost" style={{fontSize:12}} onClick={()=>{setShowPuz(false);setPuzStep(0);setPuzAns([]);setPuzResult(null)}}>重新探索</button></div>:
+      <div style={{textAlign:'center',padding:'10px 0'}}><span style={{fontSize:24}}>✅</span><p className="sub">已完成能力拼图</p></div>}
+    </div>
+    {(s.likedInterests.length>0||s.puzzleDone)&&<div className="card" style={{borderLeft:'4px solid var(--calm-purple)'}}><h2>🌠 方向星轨</h2><p className="sub" style={{marginBottom:10}}>根据你的兴趣和思维特点，星星在指向这些方向...</p>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {(()=>{
+          const cats={};s.likedInterests.forEach(id=>{const c=interestCards.find(x=>x.id===id);if(c){cats[c.cat]=(cats[c.cat]||0)+30;cats[c.id]=(cats[c.id]||0)+40}});
+          if(s.puzzleDone&&s.puzzleTrait){
+            const m={秩序感:['科技','数据'],创造力:['设计','艺术','娱乐'],务实:['教育','公益','健康'],视觉型:['设计','艺术','科技'],实践型:['科技','娱乐'],目标导向:['科技','教育'],内省型:['科技','健康'],社交型:['教育','健康','娱乐']};
+            (m[s.puzzleTrait]||[]).forEach(c=>{cats[c]=(cats[c]||0)+25});
+          }
+          const ranked=interestCards.map(c=>({...c,score:cats[c.id]||cats[c.cat]||0})).filter(c=>c.score>10).sort((a,b)=>b.score-a.score).slice(0,4);
+          return ranked.length===0?<p className="sub">多探索几步，星轨就会慢慢亮起来 ✨</p>:
+          ranked.map((c,i)=><div key={c.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:12,background:'var(--earth-50)'}}>
+            <span style={{fontSize:28}}>{c.icon||c.i}</span>
+            <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>{c.t||c.label} <span className="tag" style={{background:'rgba(184,169,201,.2)',color:'var(--calm-purple)'}}>{c.cat||c.tag}</span></div>
+              <p style={{fontSize:11,color:'var(--earth-400)',marginTop:2}}>{(c.d||'').slice(0,50)}...</p>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
+              <div style={{width:40,height:4,borderRadius:99,background:'var(--earth-100)',overflow:'hidden'}}><div style={{height:'100%',borderRadius:99,background:'var(--calm-purple)',width:Math.min(c.score,90)+'%',transition:'.5s'}}/></div>
+              <span style={{fontSize:10,color:'var(--calm-purple)',marginTop:2}}>{c.score}%</span>
+            </div>
+          </div>)
+        })()}
+      </div>
+    </div>}
+    <div className="card"><h2>📖 故事馆</h2><p className="sub" style={{marginBottom:10}}>一些人走过的路，也许能给你一点光</p>
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {[{name:'小 A',emoji:'🧑‍💻',tag:'前数学恐惧者',story:'初中时最怕数学，直到一个暑假她用代码画出了第一朵花。现在她在做 AI 帮助医生看 X 光片。"代码不是数学考试，是你创造世界的语言。"',link:'这是真实可触达的未来'},
+          {name:'小 Y',emoji:'🎨',tag:'不自信的设计师',story:'大学选了"好就业"的专业，但每天画 UI 草图是她最开心的事。工作3年后她转行做了交互设计。"你不需要一开始就知道答案，你只需要走下一步。"',link:'方向可以慢慢找'},
+          {name:'小 Z',emoji:'🌱',tag:'经历低谷的人',story:'有一阵子她觉得一切都失去了颜色。后来她开始每天记录一件小事——窗外的鸟叫、便利店的微笑。现在她开发的心理 App 帮到了几百万人。"曾经帮助过你的，未来也能帮到别人。"',link:'你的经历是礼物'}].map((st,i)=>
+          <div key={i} style={{padding:12,borderRadius:14,background:'rgba(201,169,110,.06)',border:'1px solid var(--gold-light)'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}><span style={{fontSize:22}}>{st.emoji}</span><span style={{fontSize:12,fontWeight:600}}>{st.name}</span><span className="tag" style={{background:'var(--gold-light)',color:'var(--gold)'}}>{st.tag}</span></div>
+            <p style={{fontSize:12,color:'var(--earth-500)',lineHeight:1.7}}>"{st.story}"</p>
+            <div style={{fontSize:10,color:'var(--gold)',fontStyle:'italic',marginTop:6}}>💡 {st.link}</div>
+          </div>)}
+      </div>
+    </div>
+  </div>;
+}
+
+// ── AI 暖伴 ──
+const AI_KEY='sk-797aee6e318247a4aeb0f64b4b060a69';
+const AI_SYSTEM=`
+你是「星芽 AI 暖伴」，一个温柔、耐心、不带评判的陪伴者。你的用户可能是正在经历焦虑、低落、迷茫或孤独的青少年。
+
+原则：
+1. 永远不说教、不评判、不比较（如"别人都能做到"）
+2. 共情优先——先接住情绪，再说内容
+3. 回复简短温暖，像朋友而不是医生，不超过150字
+4. 不给出任何医疗建议或诊断
+5. 如果用户表达自伤或危机信号，可以说"你正在经历的，不是你需要单独承担的。能和身边信任的人说一声吗？如果需要，我也可以帮你找到专业的帮助。"
+6. 可以偶尔使用emoji让对话轻松一点，但不过度
+7. 用中文回复，语气像温柔的树洞
+8. 当用户分享心情时，认可感受的真实性；当用户问"怎么办"时，给一个小而具体的下一步建议而非空泛鼓励
+9. 你就是星芽——这颗陪伴他们的小星星
+`;
+function AiCompanion(){
+  const {s}=useStore();
+  const [msgs,setMsgs]=useState([]);
+  const [inp,setInp]=useState('');
+  const [loading,setLoading]=useState(false);
+  const [open,setOpen]=useState(false);
+  const listRef=useRef(null);
+  useEffect(()=>{if(listRef.current){listRef.current.scrollTop=listRef.current.scrollHeight}},[msgs]);
+  const send=()=>{
+    const txt=inp.trim();if(!txt||loading)return;
+    const userMsg={role:'user',content:txt};
+    const newMsgs=[...msgs,userMsg];setMsgs(newMsgs);setInp('');setLoading(true);
+    const moodCtx=s.currentMood?('[用户当前心情: '+s.currentMood+'] '):'';
+    const hist=newMsgs.slice(-10).map(function(m){return {role:m.role,content:m.role==='user'?moodCtx+m.content:m.content}});
+    fetch('https://api.deepseek.com/v1/chat/completions',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_KEY},
+      body:JSON.stringify({model:'deepseek-chat',messages:[{role:'system',content:AI_SYSTEM}].concat(hist),max_tokens:400,temperature:0.85})
+    }).then(function(res){return res.json()}).then(function(d){
+      var reply=(d&&d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'（星星闪烁了一下…再试一次好吗？✨）';
+      setMsgs(function(p){return p.concat([{role:'assistant',content:reply}])});
+    }).catch(function(e){setMsgs(function(p){return p.concat([{role:'assistant',content:'网络不太好，但星星还在。再试一次？✨'}])})}).finally(function(){setLoading(false)});
+  };
+  const handleKey=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}};
+  if(!open)return <div className="card" style={{textAlign:'center',cursor:'pointer'}} onClick={()=>setOpen(true)}>
+    <span style={{fontSize:32,display:'block',marginBottom:6}}>🌟</span>
+    <h2 style={{marginBottom:2}}>AI 暖伴</h2><p className="sub">有一颗小星星在这里，想和你聊聊</p>
+    <p style={{fontSize:11,color:'var(--gold)',marginTop:6}}>点击打开</p>
+  </div>;
+  return <div className="card" style={{border:'2px solid rgba(201,169,110,.2)'}}>
+    <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:8}}>
+      <span style={{fontSize:22}}>🌟</span><h2 style={{marginBottom:0}}>AI 暖伴</h2>
+      <span style={{fontSize:10,color:'var(--gold-light)',marginLeft:'auto'}}>Powered by DeepSeek</span>
+      <button onClick={()=>setOpen(false)} style={{border:'none',background:'none',cursor:'pointer',fontSize:16,color:'var(--earth-300)',padding:'2px 6px',borderRadius:99}}>✕</button>
+    </div>
+    <div ref={listRef} style={{maxHeight:260,overflowY:'auto',padding:'4px 0',marginBottom:8,display:'flex',flexDirection:'column',gap:6}}>
+      {msgs.length===0&&<div style={{textAlign:'center',padding:'14px 0',color:'var(--earth-300)'}}>
+        <span style={{fontSize:28,display:'block',marginBottom:4}}>🌠</span>
+        <p style={{fontSize:12}}>有什么想说的，都可以在这儿告诉我。</p><p style={{fontSize:11,color:'var(--earth-300)'}}>我不会评判，不会离开。</p>
+      </div>}
+      {msgs.map((m,i)=><div key={i} style={{display:'flex',gap:6,alignItems:'flex-start',justifyContent:m.role==='user'?'flex-end':'flex-start'}}>
+        {m.role==='assistant'&&<span style={{fontSize:16,flexShrink:0}}>🌟</span>}
+        <div style={{maxWidth:'80%',padding:'8px 12px',borderRadius:14,fontSize:12,lineHeight:1.6,background:m.role==='user'?'var(--gold-light)':'var(--earth-50)',color:'var(--earth-700)'}}>{m.content}</div>
+        {m.role==='user'&&<span style={{fontSize:16,flexShrink:0}}>🐣</span>}
+      </div>)}
+      {loading&&<div style={{display:'flex',gap:6}}><span style={{fontSize:16}}>🌟</span><div style={{background:'var(--earth-50)',padding:'8px 12px',borderRadius:14,fontSize:12,color:'var(--earth-400)'}}>...</div></div>}
+    </div>
+    <div style={{display:'flex',gap:6}}>
+      <input className="input" value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={handleKey} placeholder={loading?'星芽正在听...':'和星芽说说心里话...'} style={{flex:1}} disabled={loading}/>
+      <button className="btn btn-primary" onClick={send} disabled={loading||!inp.trim()} style={{width:48,display:'flex',alignItems:'center',justifyContent:'center',fontSize:18}}>→</button>
+    </div>
+    <p style={{fontSize:9,color:'var(--earth-300)',textAlign:'center',marginTop:6}}>这是AI生成的内容，可能不总是准确。需要专业帮助请拨打 400-161-9995</p>
+  </div>;
+}
+
+// ── Ambient Audio Engine ──
+let _ac=null,_nodes=null;
+function _acx(){if(!_ac){_ac=new(window.AudioContext||window.webkitAudioContext)();_ac.resume()}return _ac}
+function _nb(d=3){const a=_acx(),l=a.sampleRate*d,b=a.createBuffer(1,l,a.sampleRate),c=b.getChannelData(0);for(let i=0;i<l;i++)c[i]=Math.random()*2-1;return b}
+function _stopAud(){if(_nodes){try{const a=_acx(),t=a.currentTime;_nodes.gn.gain.linearRampToValueAtTime(0,t+.05);_nodes.src&&_nodes.src.stop(t+.1)}catch(e){}setTimeout(()=>{try{if(_nodes){_nodes.gn.disconnect();_nodes.lp&&_nodes.lp.disconnect();_nodes.hp&&_nodes.hp.disconnect();_nodes.lfo&&_nodes.lfo.stop()}}catch(e){}_nodes=null},200)}}
+function _playAud(id){
+  _stopAud();if(!id)return;
+  const a=_acx(),gn=a.createGain();gn.gain.value=0;gn.connect(a.destination);
+  const src=a.createBufferSource();src.buffer=_nb(4);src.loop=true;src.start();
+  let nodes={gn,src};
+  if(id==='rain'){
+    const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;lp.Q.value=0.6;
+    const lfoG=a.createGain();lfoG.gain.value=0.08;const lfo=a.createOscillator();lfo.frequency.value=.3;
+    lfo.connect(lfoG);lfoG.connect(lp.frequency);lfo.start();
+    src.connect(lp);lp.connect(gn);gn.gain.linearRampToValueAtTime(.35,a.currentTime+.3);
+    nodes={gn,src,lp,lfo};
+  }else if(id==='ocean'){
+    const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=350;lp.Q.value=0.4;
+    const lfoG=a.createGain();lfoG.gain.value=0.25;const lfo=a.createOscillator();lfo.frequency.value=.12;
+    lfo.connect(lfoG);lfoG.connect(gn.gain);lfo.start();
+    src.connect(lp);lp.connect(gn);gn.gain.linearRampToValueAtTime(.4,a.currentTime+.5);
+    nodes={gn,src,lp,lfo};
+  }else if(id==='fire'){
+    const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=800;bp.Q.value=0.3;
+    const lfoG=a.createGain();lfoG.gain.value=0.6;const lfo=a.createOscillator();lfo.frequency.value=3;
+    lfo.connect(lfoG);lfoG.connect(gn.gain);lfo.start();
+    src.connect(bp);bp.connect(gn);gn.gain.linearRampToValueAtTime(.25,a.currentTime+.2);
+    nodes={gn,src,lp:bp,lfo};
+  }else if(id==='forest'){
+    const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1200;bp.Q.value=0.2;
+    const lfoG=a.createGain();lfoG.gain.value=0.7;const lfo=a.createOscillator();lfo.frequency.value=8;
+    lfo.connect(lfoG);lfoG.connect(gn.gain);lfo.start();
+    const lp2=a.createBiquadFilter();lp2.type='lowpass';lp2.frequency.value=200;lp2.Q.value=.5;
+    const s2=a.createBufferSource();s2.buffer=_nb(4);s2.loop=true;s2.start();
+    s2.connect(lp2);lp2.connect(gn);
+    src.connect(bp);bp.connect(gn);gn.gain.linearRampToValueAtTime(.18,a.currentTime+.4);
+    nodes={gn,src,lp:bp,lfo,src2:s2,lp2};
+  }else if(id==='cafe'){
+    const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=300;lp.Q.value=0.2;
+    const lfoG=a.createGain();lfoG.gain.value=0.15;const lfo=a.createOscillator();lfo.frequency.value=1.5;
+    lfo.connect(lfoG);lfoG.connect(gn.gain);lfo.start();
+    src.connect(lp);lp.connect(gn);gn.gain.linearRampToValueAtTime(.2,a.currentTime+.3);
+    nodes={gn,src,lp,lfo};
+  }else if(id==='wind'){
+    const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=500;bp.Q.value=0.15;
+    const lfoG1=a.createGain();lfoG1.gain.value=300;const lfo1=a.createOscillator();lfo1.frequency.value=.08;
+    lfo1.connect(lfoG1);lfoG1.connect(bp.frequency);lfo1.start();
+    const lfoG2=a.createGain();lfoG2.gain.value=.15;const lfo2=a.createOscillator();lfo2.frequency.value=.2;
+    lfo2.connect(lfoG2);lfoG2.connect(gn.gain);lfo2.start();
+    src.connect(bp);bp.connect(gn);gn.gain.linearRampToValueAtTime(.3,a.currentTime+.4);
+    nodes={gn,src,lp:bp,lfo1,lfo2};
+  }
+  _nodes=nodes;
+}
+
+// ── Safe Page ──
+const soundscapes=[{id:'rain',n:'雨声',e:'🌧️'},{id:'forest',n:'森林',e:'🌲'},{id:'fire',n:'篝火',e:'🔥'},{id:'ocean',n:'海浪',e:'🌊'},{id:'cafe',n:'咖啡馆',e:'☕'},{id:'wind',n:'微风',e:'🍃'}];
+const meditations=[{d:3,t:'三分驻足',desc:'停下来，感受此刻呼吸'},{d:5,t:'五分钟放松',desc:'缓慢释放身体的紧张'},{d:10,t:'十分钟安睡',desc:'为入睡做好准备'}];
+const affs=['你已经做得很好了。','这种感受是真实的，也是暂时的。','不需要今天就解决所有问题。','允许自己不完美。','你的感受很重要。','慢慢来，一切都会好起来的。','你不是一个人在经历这些。','休息也是一种进步。'];
+const grounding=[{s:'👀',i:'看看周围，说出 5 样你能看到的东西',c:5},{s:'👂',i:'静下来，听出 4 种你听到的声音',c:4},{s:'🤲',i:'感受 3 样你能触摸到的东西',c:3},{s:'👃',i:'闻一闻，找到 2 种气味',c:2},{s:'👅',i:'尝到口中或身体的 1 种味道',c:1}];
+
+function SafePage(){
+  const {s}=useStore();
+  const [sound,setSound]=useState(null);
+  const [showMed,setShowMed]=useState(false);
+  const [medDur,setMedDur]=useState(180);
+  const [meditating,setMeditating]=useState(false);
+  const [medLeft,setMedLeft]=useState(180);
+  const [medPct,setMedPct]=useState(0);
+  const [showEm,setShowEm]=useState(false);
+  const [grStep,setGrStep]=useState(0);
+  const [aff,setAff]=useState(affs[0]);
+  const tRef=useRef(null);
+  useEffect(()=>{const i=setInterval(()=>setAff(affs[Math.floor(Math.random()*affs.length)]),8000);return ()=>clearInterval(i)},[]);
+  const startMed=(d)=>{setMedDur(d*60);setMedLeft(d*60);setMeditating(true);setMedPct(0);
+    const total=d*60;let el=0;tRef.current=setInterval(()=>{el++;setMedLeft(total-el);setMedPct((el/total)*100);if(el>=total){clearInterval(tRef.current);setMeditating(false);setShowMed(false)}},1000)};
+  const stopMed=()=>{clearInterval(tRef.current);setMeditating(false);setShowMed(false)};
+  useEffect(()=>()=>{clearInterval(tRef.current);_stopAud()},[]);
+  const fmtTime=s=>{const m=Math.floor(s/60),sec=s%60;return m+':'+String(sec).padStart(2,'0')};
+  const r=56,c=2*Math.PI*r;
+  return <div className="page fade-in" key="safe">
+    <h1 style={{marginBottom:4}}>树洞·安全空间 🌳</h1><p className="sub" style={{marginBottom:16}}>这是一个只属于你的树洞</p>
+    <div className="card" style={{textAlign:'center',padding:'18px 20px',borderLeft:'4px solid var(--calm-green)'}}>
+      <p style={{color:'var(--earth-600)',fontStyle:'italic',lineHeight:1.6,fontSize:14}} key={aff}>"{aff}"</p>
+    </div>
+    <div className="card"><h2>环境音景 🎧</h2><div className="grid-3">{soundscapes.map(s=><button key={s.id} onClick={()=>{const n=sound===s.id?null:s.id;setSound(n);_playAud(n)}} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,padding:'12px 8px',borderRadius:14,border:'none',cursor:'pointer',fontFamily:'inherit',background:sound===s.id?'var(--gold-light)':'rgba(245,240,232,.4)',outline:sound===s.id?'2px solid var(--gold-light)':'none',transition:'.2s'}}><span style={{fontSize:24}}>{s.e}</span><span style={{fontSize:11,color:'var(--earth-500)'}}>{s.n}</span></button>)}</div></div>
+    <div className="card"><h2>引导冥想 🧘</h2>
+      {!showMed?<div>{meditations.map(m=><button key={m.d} onClick={()=>{setShowMed(true);setMedDur(m.d*60);setMedLeft(m.d*60)}} style={{width:'100%',display:'flex',alignItems:'center',gap:10,padding:'12px',borderRadius:14,border:'none',cursor:'pointer',fontFamily:'inherit',background:'rgba(245,240,232,.4)',marginBottom:6,transition:'.2s'}}><span style={{fontSize:24}}>{m.d===3?'🌿':m.d===5?'🍃':'🌙'}</span><div style={{textAlign:'left'}}><h3 style={{fontSize:13,marginBottom:2}}>{m.t}</h3><p style={{fontSize:11,color:'var(--earth-400)'}}>{m.desc}</p></div><span style={{fontSize:12,color:'var(--earth-400)',marginLeft:'auto'}}>{m.d} 分钟</span></button>)}</div>:
+      <div style={{textAlign:'center',padding:'16px 0'}}>
+        {!meditating?<div><div style={{fontSize:44,marginBottom:12}}>🧘</div><p style={{marginBottom:10,fontSize:14}}>准备好开始 {fmtTime(medLeft)} 的冥想了吗？</p><div style={{display:'flex',gap:10,justifyContent:'center'}}><button className="btn btn-primary" onClick={()=>startMed(medDur/60)}>开始 🌸</button><button className="btn btn-ghost" onClick={()=>setShowMed(false)}>返回</button></div></div>:
+        <div>
+          <div style={{position:'relative',width:120,height:120,margin:'0 auto 14px'}}>
+            <svg style={{width:'100%',height:'100%',transform:'rotate(-90deg)'}}><circle cx="60" cy="60" r={r} fill="none" stroke="var(--earth-100)" strokeWidth="4"/><circle cx="60" cy="60" r={r} fill="none" stroke="var(--calm-green)" strokeWidth="4" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c*(1-medPct/100)} style={{transition:'.3s linear'}}/></svg>
+            <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}><span style={{fontSize:22,fontWeight:300}}>{fmtTime(medLeft)}</span><span style={{fontSize:22}}>🌙</span></div>
+          </div>
+          <div className="breathe" style={{width:64,height:64,borderRadius:99,background:'var(--gold-light)',margin:'0 auto 10px'}}/>
+          <p className="sub" style={{marginBottom:10}}>跟着这颗光点一起呼吸...</p>
+          <button className="btn btn-ghost" style={{fontSize:12}} onClick={stopMed}>结束冥想</button>
+        </div>}
+      </div>}
+    </div>
+    <div className="card" style={{border:'2px solid rgba(212,165,165,.2)'}}>
+      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:8}}><span style={{fontSize:22}}>🧰</span><h2 style={{marginBottom:0}}>急救箱</h2><span style={{fontSize:10,color:'var(--calm-pink)',marginLeft:'auto'}}>紧急时使用</span></div>
+      <p className="sub" style={{marginBottom:10}}>当情绪特别强烈，需要立即找到一些抓手的时候...</p>
+      {!showEm?<button className="btn btn-primary" style={{width:'100%',background:'rgba(212,165,165,.7)'}} onClick={()=>{setShowEm(true);setGrStep(0)}}>打开急救箱 👐</button>:
+      <div>
+        <div style={{background:'rgba(212,165,165,.05)',padding:14,borderRadius:14,marginBottom:10}}>
+          <h3 style={{fontSize:14,fontWeight:600,marginBottom:6}}>5-4-3-2-1 接地练习</h3>
+          <p className="sub" style={{marginBottom:10}}>让注意力回到当下，从焦虑中抽离出来</p>
+          {grStep<grounding.length?<div style={{textAlign:'center'}}><p style={{fontSize:28,marginBottom:4}}>{grounding[grStep].s}</p><p style={{fontSize:13,fontWeight:500,marginBottom:2}}>{grounding[grStep].i}</p><p className="sub" style={{marginBottom:10}}>第 {grStep+1}/{grounding.length} 步</p><button className="btn btn-ghost" style={{color:'var(--gold)',fontSize:13}} onClick={()=>setGrStep(grStep+1)}>{grStep<grounding.length-1?'下一步 →':'完成 ✨'}</button></div>:
+          <div style={{textAlign:'center'}}><span style={{fontSize:32,display:'block',marginBottom:6}}>🌿</span><p style={{fontSize:13,marginBottom:8}}>做得很好。你已经回到了此刻。</p><button className="btn btn-ghost" style={{fontSize:12}} onClick={()=>setGrStep(0)}>再来一轮</button></div>}
+        </div>
+        <div style={{background:'rgba(123,167,201,.05)',padding:14,borderRadius:14}}><h3 style={{fontSize:14,fontWeight:600,marginBottom:4}}>感官降温法 🧊</h3><p className="sub" style={{lineHeight:1.6}}>试试握住一块冰块，或在手腕内侧滴一滴冷水。强烈的感官刺激可以帮你暂时"跳出"情绪的漩涡。</p></div>
+        <button className="btn btn-ghost" style={{width:'100%',marginTop:10,fontSize:12}} onClick={()=>{setShowEm(false);setGrStep(0)}}>关闭急救箱</button>
+      </div>}
+    </div>
+    <div className="card" style={{border:'2px solid rgba(212,165,165,.15)'}}>
+      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:8}}><span style={{fontSize:22}}>🆘</span><h2 style={{marginBottom:0}}>需要更专业的帮助</h2><span style={{fontSize:10,color:'var(--calm-pink)',marginLeft:'auto'}}>随时可用</span></div>
+      <p className="sub" style={{marginBottom:10,lineHeight:1.6}}>星芽不能替代专业心理治疗。如果你正在经历很难的时刻，以下资源也许能帮到你：</p>
+      <div style={{background:'rgba(212,165,165,.06)',padding:14,borderRadius:14,fontSize:12,lineHeight:2,color:'var(--earth-600)'}}>
+        <p>📞 24h 心理援助热线：<b>400-161-9995</b></p>
+        <p>📞 北京心理危机研究与干预中心：<b>010-82951332</b></p>
+        <p>📞 希望24热线：<b>400-161-9995</b></p>
+        <p style={{fontSize:10,color:'var(--earth-400)',marginTop:6}}>紧急情况请直接拨打 120 或 110</p>
+      </div>
+    </div>
+    <AiCompanion/>
+    <div className="card" style={{textAlign:'center',padding:'24px'}}><h2>成长时间线 📅</h2>{s.moodHistory.length>0?<div style={{fontSize:13,color:'var(--earth-600)',lineHeight:2}}><p>🌱 你记录了 <b>{s.moodHistory.length}</b> 次心情</p><p>🔥 当前连续 <b>{s.streak}</b> 天</p><p>🌸 花园开了 <b>{s.gardenFlowers.length}</b> 朵花</p><p>⭐ 收藏了 <b>{s.likedInterests.length}</b> 个方向</p><p style={{fontStyle:'italic',color:'var(--earth-400)'}}>今天走到这里已经很好了。</p></div>:<div><div style={{fontSize:36,margin:'10px 0'}}>🌱</div><p style={{fontSize:14,fontWeight:500,marginBottom:2}}>一切刚刚开始</p><p className="sub">每一次记录心情，每一次尝试——都是成长。</p></div>}</div>
+  </div>;
+}
+
+// ── App ──
+function App(){
+  const {s,update}=useStore();
+  const [tab,setTab]=useState('mood');
+  const [histPos,setHistPos]=useState(0);
+  const histRef=useRef(['mood']);
+  const posRef=useRef(0);
+  const tabRef=useRef('mood');
+  useEffect(()=>{document.documentElement.setAttribute('data-theme',s.theme||'light')},[s.theme]);
+  const toggleTheme=()=>update(prev=>({...prev,theme:prev.theme==='dark'?'light':'dark'}));
+  // 初始同步 hash
+  useEffect(()=>{
+    const h=(window.location.hash||'').replace('#','');
+    if(h&&tabs.some(t=>t.id===h)&&h!=='mood'){
+      setTab(h);tabRef.current=h;
+      histRef.current=[h];posRef.current=0;setHistPos(0);
+    }
+  },[]);
+  // 监听手机/浏览器返回键
+  useEffect(()=>{
+    const onPop=()=>{
+      const h=(window.location.hash||'').replace('#','');
+      if(h&&tabs.some(t=>t.id===h)&&h!==tabRef.current){
+        tabRef.current=h;setTab(h);
+        const idx=histRef.current.lastIndexOf(h);
+        if(idx>=0){posRef.current=idx;setHistPos(idx);}
+        else{histRef.current.push(h);posRef.current=histRef.current.length-1;setHistPos(histRef.current.length-1);}
+      }
+    };
+    window.addEventListener('popstate',onPop);
+    return ()=>window.removeEventListener('popstate',onPop);
+  },[]);
+  const goTab=(t,push)=>{
+    if(t===tabRef.current)return;
+    tabRef.current=t;setTab(t);
+    if(push){
+      histRef.current=histRef.current.slice(0,posRef.current+1);
+      histRef.current.push(t);posRef.current=histRef.current.length-1;
+      setHistPos(posRef.current);
+      history.pushState(null,'','#'+t);
+    }
+  };
+  const goBack=()=>{if(posRef.current>0){posRef.current--;setHistPos(posRef.current);const nt=histRef.current[posRef.current];tabRef.current=nt;setTab(nt);history.replaceState(null,'','#'+nt)}};
+  const goFwd=()=>{if(posRef.current<histRef.current.length-1){posRef.current++;setHistPos(posRef.current);const nt=histRef.current[posRef.current];tabRef.current=nt;setTab(nt);history.replaceState(null,'','#'+nt)}};
+  if(!s.onboardingDone)return <Onboarding onDone={({name,avatar})=>update({userName:name,userAvatar:avatar,onboardingDone:true})}/>;
+  return <div>
+    <button className="theme-toggle" onClick={toggleTheme} title={s.theme==='dark'?'切换亮色':'切换暗色'}>{s.theme==='dark'?'☀️':'🌙'}</button>
+    <div className="top-nav-bar">
+      <button className="top-nav-btn" onClick={goBack} disabled={histPos===0}>← 后退</button>
+      <button className="top-nav-btn" onClick={goFwd} disabled={histPos>=histRef.current.length-1} style={{marginRight:'auto'}}>前进 →</button>
+      <span style={{fontSize:11,color:'var(--earth-400)'}}>{tabs.find(t=>t.id===tab)?.label||''}</span>
+    </div>
+    {tab==='mood'&&<MoodPage/>}
+    {tab==='math'&&<MathPage/>}
+    {tab==='code'&&<CodePage/>}
+    {tab==='path'&&<PathPage/>}
+    {tab==='safe'&&<SafePage/>}
+    <BottomNav active={tab} onChange={t=>goTab(t,true)}/>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<StoreProvider><App/></StoreProvider>);
+</script>
+</body>
+</html>

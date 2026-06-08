@@ -1,0 +1,6 @@
+- generic [ref=e4]:
+  - generic [ref=e5]: 🌟
+  - heading "欢迎来到星芽 🌱" [level=1] [ref=e6]
+  - paragraph [ref=e7]: 这里没有考试，没有评判。 只有一颗陪你发芽的星星。
+  - paragraph [ref=e8]: 你不必成为太阳，做一颗发芽的星星就好。
+  - button "继续 →" [ref=e13] [cursor=pointer]
