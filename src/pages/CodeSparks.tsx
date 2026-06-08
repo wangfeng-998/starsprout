@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Spark {
@@ -7,9 +7,9 @@ interface Spark {
   description: string;
   stage: 1 | 2 | 3;
   template: string;
+  defaultOutput: string;
   icon: string;
   tag: string;
-  outputDescription: string;
 }
 
 const sparks: Spark[] = [
@@ -19,25 +19,64 @@ const sparks: Spark[] = [
     description: '让计算机对你说 "Hello, Star!" —— 你的第一行代码',
     stage: 1,
     template: 'print("Hello, Star!")',
+    defaultOutput: 'Hello, Star!',
     icon: '👋',
     tag: '入门',
-    outputDescription: '屏幕上会出现一行文字：Hello, Star!',
+  },
+  {
+    id: 'star-name',
+    title: '星星的名字',
+    description: '让程序记住你的名字并跟你打招呼',
+    stage: 1,
+    template: `name = "小星星"
+print("你好，" + name + "！欢迎来到编程世界 ✨")`,
+    defaultOutput: '你好，小星星！欢迎来到编程世界 ✨',
+    icon: '📛',
+    tag: '入门',
+  },
+  {
+    id: 'weather-emoji',
+    title: '天气表情包',
+    description: '输入天气，输出对应的表情符号',
+    stage: 1,
+    template: `weather = "晴天"  # 试试改成 下雨、多云、下雪
+
+if weather == "晴天":
+    print("☀️ 阳光明媚！")
+elif weather == "下雨":
+    print("🌧️ 记得带伞哦")
+elif weather == "多云":
+    print("⛅ 云朵在飘")
+else:
+    print("🌈 不管什么天气，都是好天气！")`,
+    defaultOutput: '☀️ 阳光明媚！',
+    icon: '🌤️',
+    tag: '条件',
   },
   {
     id: 'star-twinkle',
     title: '画一颗星星',
-    description: '用代码画出你的第一颗星星',
+    description: '用代码画出你的第一颗星星图案',
     stage: 1,
     template: `for i in range(5):
     print("  " * (5 - i) + "* " * (i + 1))`,
+    defaultOutput: `    * \n   * * \n  * * * \n * * * * \n* * * * *`,
     icon: '⭐',
     tag: '图形',
-    outputDescription: `
-    *
-   * *
-  * * *
- * * * *
-* * * * *`,
+  },
+  {
+    id: 'multiplication-table',
+    title: '乘法口诀表',
+    description: '用嵌套循环打印九九乘法表',
+    stage: 2,
+    template: `for i in range(1, 10):
+    line = ""
+    for j in range(1, i + 1):
+        line += f"{j}×{i}={i*j}\\t"
+    print(line)`,
+    defaultOutput: `1×1=1\n1×2=2  2×2=4\n1×3=3  2×3=6  3×3=9\n...\n9×9=81`,
+    icon: '✖️',
+    tag: '循环',
   },
   {
     id: 'color-mood',
@@ -56,9 +95,9 @@ else:
     color = "🌈 彩虹色"
 
 print("今天的颜色是:", color)`,
+    defaultOutput: '今天的颜色是: 🌻 金黄色',
     icon: '🎨',
     tag: '条件',
-    outputDescription: '根据你选择的心情，程序会返回对应的颜色',
   },
   {
     id: 'count-stars',
@@ -72,9 +111,104 @@ for i in range(1, lucky_number + 1):
     print(f"第 {i} 颗星星亮起来了...")
 
 print(f"\\n一共 {lucky_number} 颗星星在空中闪烁 ✨")`,
+    defaultOutput: `🌟\n第 1 颗星星亮起来了...\n🌟🌟\n第 2 颗星星亮起来了...\n...\n一共 7 颗星星在空中闪烁 ✨`,
     icon: '🔢',
     tag: '循环',
-    outputDescription: '🌟\n🌟🌟\n🌟🌟🌟\n... 星星一颗一颗亮起来',
+  },
+  {
+    id: 'guess-number',
+    title: '猜数字游戏',
+    description: '经典的猜数字游戏，看看几次能猜中',
+    stage: 2,
+    template: `import random
+
+secret = random.randint(1, 10)
+guess = 5  # 猜一个 1-10 之间的数字
+tries = 1
+
+while guess != secret:
+    if guess < secret:
+        print(f"第 {tries} 次: {guess} → 大一点！")
+    else:
+        print(f"第 {tries} 次: {guess} → 小一点！")
+    guess = (guess + secret) // 2  # 缩小范围
+    tries += 1
+
+print(f"🎉 猜对了！数字是 {secret}，你用了 {tries} 次")`,
+    defaultOutput: `第 1 次: 5 → 大一点！\n🎉 猜对了！数字是 7，你用了 2 次`,
+    icon: '🎲',
+    tag: '逻辑',
+  },
+  {
+    id: 'simple-calc',
+    title: '迷你计算器',
+    description: '用函数做一个能加减乘除的小计算器',
+    stage: 2,
+    template: `def calculate(a, b, op):
+    if op == "+":
+        return a + b
+    elif op == "-":
+        return a - b
+    elif op == "*":
+        return a * b
+    elif op == "/":
+        return a / b if b != 0 else "不能除以0！"
+    else:
+        return "未知运算"
+
+print("3 + 5 =", calculate(3, 5, "+"))
+print("10 - 4 =", calculate(10, 4, "-"))
+print("6 * 7 =", calculate(6, 7, "*"))
+print("8 / 2 =", calculate(8, 2, "/"))`,
+    defaultOutput: '3 + 5 = 8\n10 - 4 = 6\n6 * 7 = 42\n8 / 2 = 4.0',
+    icon: '🧮',
+    tag: '函数',
+  },
+  {
+    id: 'todo-list',
+    title: '待办清单',
+    description: '用列表管理你的每日任务',
+    stage: 3,
+    template: `todos = []
+
+def add_task(task):
+    todos.append(task)
+    print(f"✅ 已添加: {task}")
+
+def show_tasks():
+    print("\\n📋 我的待办清单:")
+    if not todos:
+        print("  （暂时空空如也~）")
+    for i, task in enumerate(todos, 1):
+        print(f"  {i}. {task}")
+
+add_task("学习一个数学概念")
+add_task("练习10分钟代码")
+add_task("记录今天的心情")
+show_tasks()`,
+    defaultOutput: `✅ 已添加: 学习一个数学概念\n✅ 已添加: 练习10分钟代码\n✅ 已添加: 记录今天的心情\n\n📋 我的待办清单:\n  1. 学习一个数学概念\n  2. 练习10分钟代码\n  3. 记录今天的心情`,
+    icon: '📝',
+    tag: '列表',
+  },
+  {
+    id: 'poem-generator',
+    title: '随机小诗',
+    description: '用随机选择拼出一首独一无二的小诗',
+    stage: 3,
+    template: `import random
+
+subjects = ["星星", "月亮", "微风", "萤火虫", "露珠"]
+verbs = ["轻轻说", "眨了眨眼", "悄悄飞过", "缓缓升起", "静静落下"]
+endings = ["晚安，世界", "明天见", "好梦", "一切都好", "慢慢来"]
+
+for i in range(3):
+    s = random.choice(subjects)
+    v = random.choice(verbs)
+    e = random.choice(endings)
+    print(f"{s}{v}，{e}")`,
+    defaultOutput: `星星轻轻说，晚安，世界\n月亮悄悄飞过，明天见\n萤火虫眨了眨眼，一切都好`,
+    icon: '📜',
+    tag: '随机',
   },
   {
     id: 'garden-builder',
@@ -92,14 +226,14 @@ create_garden(my_flowers)
 
 # 试试添加更多花！
 # my_flowers.append("🌼")`,
+    defaultOutput: '🏡 === 我的小花园 === 🏡\n|  🌻  |\n|  🌷  |\n|  🌸  |\n|  🌺  |\n==============',
     icon: '🏗️',
     tag: '函数',
-    outputDescription: '用代码自动生成一个整齐的小花园',
   },
   {
     id: 'mood-tracker',
     title: '心情记录器',
-    description: '创建一个简单的心情追踪工具',
+    description: '创建一个简单的心情追踪日记工具',
     stage: 3,
     template: `class MoodDiary:
     def __init__(self, name):
@@ -120,17 +254,72 @@ diary = MoodDiary("小星星")
 diary.add_entry("😊", "今天阳光很好")
 diary.add_entry("😌", "学会了写代码")
 diary.show_all()`,
+    defaultOutput: '✅ 已记录: 😊 - 今天阳光很好\n✅ 已记录: 😌 - 学会了写代码\n\n📖 小星星 的心情日记:\n  1. 😊 今天阳光很好\n  2. 😌 学会了写代码',
     icon: '📓',
     tag: '类',
-    outputDescription: '创建一个属于自己的心情日记本，可以记录和查看心情',
+  },
+  {
+    id: 'password-checker',
+    title: '密码强度检测',
+    description: '写一个检测密码够不够强的程序',
+    stage: 3,
+    template: `def check_password(pw):
+    score = 0
+    if len(pw) >= 8:
+        score += 1
+    if any(c.isdigit() for c in pw):
+        score += 1
+    if any(c.isupper() for c in pw):
+        score += 1
+    if any(c in "!@#$%^&*" for c in pw):
+        score += 1
+    return score
+
+test_pws = ["123456", "Star1234", "St@rSprout2026!"]
+for pw in test_pws:
+    s = check_password(pw)
+    level = "🟢 强" if s >= 4 else "🟡 中" if s >= 2 else "🔴 弱"
+    print(f"{pw}: {level} (得分 {s}/4)")`,
+    defaultOutput: '123456: 🔴 弱 (得分 0/4)\nStar1234: 🟡 中 (得分 3/4)\nSt@rSprout2026!: 🟢 强 (得分 4/4)',
+    icon: '🔐',
+    tag: '逻辑',
+  },
+  {
+    id: 'emotion-thermometer',
+    title: '情绪温度计',
+    description: '把情绪分数转换成可视化的温度条',
+    stage: 2,
+    template: `def emotion_bar(score, max_score=10):
+    filled = "█" * score
+    empty = "░" * (max_score - score)
+    emoji = "😄" if score >= 7 else "😐" if score >= 4 else "😢"
+    return f"|{filled}{empty}| {score}/{max_score} {emoji}"
+
+print("今日心情温度:")
+print(emotion_bar(8))
+print("昨日心情温度:")
+print(emotion_bar(5))
+print("上周心情温度:")
+print(emotion_bar(3))`,
+    defaultOutput: '今日心情温度:\n|████████░░| 8/10 😄\n昨日心情温度:\n|█████░░░░░| 5/10 😐\n上周心情温度:\n|███░░░░░░░| 3/10 😢',
+    icon: '🌡️',
+    tag: '函数',
   },
 ];
+
+const allTags = ['全部', ...Array.from(new Set(sparks.map((s) => s.tag)))];
 
 export default function CodeSparks() {
   const [activeSpark, setActiveSpark] = useState<Spark | null>(null);
   const [userCode, setUserCode] = useState('');
   const [output, setOutput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [filterTag, setFilterTag] = useState('全部');
+
+  const visibleSparks = useMemo(
+    () => (filterTag === '全部' ? sparks : sparks.filter((s) => s.tag === filterTag)),
+    [filterTag]
+  );
 
   const openSpark = (spark: Spark) => {
     setActiveSpark(spark);
@@ -144,71 +333,39 @@ export default function CodeSparks() {
     setErrorMsg('');
 
     try {
-      // Build a simulated output from the code
-      const lines: string[] = [];
-
-      // Parse and simulate execution
-      if (userCode.includes('print(')) {
-        const printMatches = userCode.match(/print\(["']([^"']*)["']\s*\)/g);
-        const fStringMatches = userCode.match(
-          /print\(f["']([^"']*)["'].*?\)/g
-        );
-
-        if (userCode.includes('for i in range(')) {
-          const rangeMatch = userCode.match(/range\((\d+),\s*(\d+)\s*\+\s*(\d+)\)/);
-          const simpleRange = userCode.match(
-            /range\(\s*(\d+)\s*,\s*(\d+)\s*\+\s*(\d+)\s*\)/
-          );
-
-          if (userCode.includes('print("🌟"') || userCode.includes("print('🌟'")) {
-            const luckyMatch = userCode.match(/lucky_number\s*=\s*(\d+)/);
-            const lucky = luckyMatch ? parseInt(luckyMatch[1]) : 7;
-            for (let i = 1; i <= lucky; i++) {
-              lines.push('🌟'.repeat(i));
-              lines.push(`第 ${i} 颗星星亮起来了...`);
-            }
-            lines.push('');
-            lines.push(`一共 ${lucky} 颗星星在空中闪烁 ✨`);
-          } else {
-            for (let i = 0; i < 5; i++) {
-              const spaces = '  '.repeat(4 - i);
-              const stars = '* '.repeat(i + 1);
-              lines.push(spaces + stars);
-            }
-          }
-        } else if (userCode.includes('mood =')) {
-          const moodMatch = userCode.match(/mood\s*=\s*["'](\w+)["']/);
-          const mood = moodMatch ? moodMatch[1] : 'happy';
-          const moodColors: Record<string, string> = {
-            happy: '🌻 金黄色',
-            sad: '🌧️ 蓝色',
-            calm: '🍃 绿色',
-            excited: '🌈 彩虹色',
-          };
-          const color = moodColors[mood] || '🌈 彩虹色';
-          lines.push(`今天的颜色是: ${color}`);
-        } else if (userCode.includes('class MoodDiary')) {
-          lines.push('✅ 已记录: 😊 - 今天阳光很好');
-          lines.push('✅ 已记录: 😌 - 学会了写代码');
-          lines.push('');
-          lines.push('📖 小星星 的心情日记:');
-          lines.push('  1. 😊 今天阳光很好');
-          lines.push('  2. 😌 学会了写代码');
-        } else if (userCode.includes('def create_garden')) {
-          lines.push('🏡 === 我的小花园 === 🏡');
-          lines.push('|  🌻  |');
-          lines.push('|  🌷  |');
-          lines.push('|  🌸  |');
-          lines.push('|  🌺  |');
-          lines.push('==============');
-        } else {
-          lines.push('Hello, Star!');
-        }
+      // If code hasn't been modified, show default output
+      if (activeSpark && userCode === activeSpark.template) {
+        setOutput(activeSpark.defaultOutput);
+        return;
       }
 
-      setOutput(lines.length > 0 ? lines.join('\n') : '代码运行完成 ✅ （无输出）');
-    } catch (e) {
-      setErrorMsg(`遇到了一点小问题... 别担心，调整一下代码就好 🌱`);
+      // Attempt to simulate: extract print statements
+      const printPatterns = [
+        ...userCode.matchAll(/print\(f?"([^"]*)"[^)]*\)/g),
+        ...userCode.matchAll(/print\(f?'([^']*)'[^)]*\)/g),
+      ];
+
+      if (printPatterns.length > 0) {
+        // Simple: show literal print outputs with variable substitution hints
+        const lines: string[] = [];
+        for (const match of printPatterns) {
+          let text = match[1];
+          // Try basic substitution
+          text = text.replace(/\{(\w+)\}/g, (_, v) =>
+            (userCode.match(new RegExp(`${v}\\s*=\\s*"([^"]*)"`)) ||
+             userCode.match(new RegExp(`${v}\\s*=\\s*'([^']*)'`)) ||
+             [])[1] || `{${v}}`
+          );
+          lines.push(text);
+        }
+        setOutput(lines.join('\n') || '代码运行完成 ✅');
+      } else if (activeSpark) {
+        setOutput(activeSpark.defaultOutput);
+      } else {
+        setOutput('代码运行完成 ✅');
+      }
+    } catch {
+      setErrorMsg('遇到了一点小问题... 调整一下代码就好 🌱');
     }
   };
 
@@ -227,9 +384,7 @@ export default function CodeSparks() {
       animate={{ opacity: 1 }}
     >
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-earth-700 mb-1">
-          代码星火 ✨
-        </h1>
+        <h1 className="text-2xl font-bold text-earth-700 mb-1">代码星火 ✨</h1>
         <p className="text-sm text-earth-400">
           每一行代码都是一颗星星，聚在一起就是银河
         </p>
@@ -258,9 +413,31 @@ export default function CodeSparks() {
         </div>
       </div>
 
+      {/* 标签筛选 */}
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-semibold text-earth-500">
+          火花库（{sparks.length} 颗）
+        </h2>
+        <div className="flex gap-1 flex-wrap justify-end max-w-[240px]">
+          {allTags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => setFilterTag(tag)}
+              className={`text-xs px-2 py-1 rounded-lg transition-all ${
+                filterTag === tag
+                  ? 'bg-calm-gold/20 text-calm-gold font-medium'
+                  : 'text-earth-400 hover:bg-earth-100'
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Sparks Grid */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        {sparks.map((spark) => (
+        {visibleSparks.map((spark) => (
           <motion.button
             key={spark.id}
             whileTap={{ scale: 0.95 }}
