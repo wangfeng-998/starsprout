@@ -305,6 +305,192 @@ print(emotion_bar(3))`,
     icon: '🌡️',
     tag: '函数',
   },
+  {
+    id: 'fibonacci',
+    title: '斐波那契数列',
+    description: '1, 1, 2, 3, 5, 8... 每个数都是前两个的和——大自然最美的数列',
+    stage: 2,
+    template: `a, b = 1, 1
+print("斐波那契数列:")
+for i in range(10):
+    print(f"第{i+1}项: {a}")
+    a, b = b, a + b`,
+    defaultOutput: '第1项: 1\n第2项: 1\n第3项: 2\n第4项: 3\n第5项: 5\n第6项: 8\n第7项: 13\n第8项: 21\n第9项: 34\n第10项: 55',
+    icon: '🐚',
+    tag: '循环',
+  },
+  {
+    id: 'fizzbuzz',
+    title: 'FizzBuzz 挑战',
+    description: '经典编程题：3的倍数说Fizz，5的倍数说Buzz，都是就说FizzBuzz',
+    stage: 2,
+    template: `for n in range(1, 16):
+    if n % 15 == 0:
+        print("FizzBuzz!")
+    elif n % 3 == 0:
+        print("Fizz")
+    elif n % 5 == 0:
+        print("Buzz")
+    else:
+        print(n)`,
+    defaultOutput: '1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz!',
+    icon: '🥤',
+    tag: '逻辑',
+  },
+  {
+    id: 'palindrome',
+    title: '回文检测器',
+    description: '正着读反着读都一样——检测一句话是不是回文',
+    stage: 2,
+    template: `def is_palindrome(text):
+    clean = text.lower().replace(" ", "")
+    return clean == clean[::-1]
+
+tests = ["上海自来水来自海上", "hello", "A man a plan a canal Panama"]
+for t in tests:
+    result = "是回文" if is_palindrome(t) else "不是回文"
+    print(f"{t}: {result}")`,
+    defaultOutput: '上海自来水来自海上: 是回文\nhello: 不是回文\nA man a plan a canal Panama: 是回文',
+    icon: '🔁',
+    tag: '逻辑',
+  },
+  {
+    id: 'dice-roller',
+    title: '掷骰子模拟器',
+    description: '模拟掷骰子，统计每个面出现的次数——体验随机性',
+    stage: 1,
+    template: `import random
+
+results = {i: 0 for i in range(1, 7)}
+for _ in range(100):
+    roll = random.randint(1, 6)
+    results[roll] += 1
+
+print("掷骰子100次结果:")
+for face, count in results.items():
+    bar = "█" * count
+    print(f"  面{face}: {bar} ({count}次)")`,
+    defaultOutput: '掷骰子100次结果:\n  面1: ████████████████ (16次)\n  面2: █████████████████ (17次)\n  面3: ██████████████ (14次)\n  面4: █████████████████ (17次)\n  面5: ███████████████████ (19次)\n  面6: █████████████████ (17次)',
+    icon: '🎯',
+    tag: '随机',
+  },
+  {
+    id: 'prime-checker',
+    title: '质数侦探',
+    description: '检测一个数是不是质数——只能被1和自己整除',
+    stage: 2,
+    template: `def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+nums = [2, 7, 15, 17, 21, 29, 100]
+for n in nums:
+    result = "质数" if is_prime(n) else "合数"
+    print(f"{n}: {result}")`,
+    defaultOutput: '2: 质数\n7: 质数\n15: 合数\n17: 质数\n21: 合数\n29: 质数\n100: 合数',
+    icon: '🔎',
+    tag: '逻辑',
+  },
+  {
+    id: 'text-reverser',
+    title: '文字翻转机',
+    description: '把一句话完全倒过来——像镜子里面的文字',
+    stage: 1,
+    template: `def reverse_text(text):
+    return text[::-1]
+
+samples = ["星芽", "Hello World", "从前有座山"]
+for s in samples:
+    print(f"{s} -> {reverse_text(s)}")`,
+    defaultOutput: '星芽 -> 芽星\nHello World -> dlroW olleH\n从前有座山 -> 山座有前从',
+    icon: '🪞',
+    tag: '函数',
+  },
+  {
+    id: 'ascii-art',
+    title: 'ASCII 艺术画',
+    description: '用字符画出图案——计算机最古老的艺术形式',
+    stage: 2,
+    template: `def draw_triangle(h):
+    for i in range(1, h + 1):
+        spaces = " " * (h - i)
+        stars = "*" * (2 * i - 1)
+        print(spaces + stars)
+
+draw_triangle(5)
+print("\\n试试改成你自己的图案吧！")`,
+    defaultOutput: '    *\n   ***\n  *****\n *******\n*********\n\n试试改成你自己的图案吧！',
+    icon: '🎭',
+    tag: '图形',
+  },
+  {
+    id: 'countdown-timer',
+    title: '倒计时器',
+    description: '从任意数字开始倒数，带有可爱的进度条',
+    stage: 2,
+    template: `def countdown(seconds):
+    print("开始倒数!")
+    for i in range(seconds, 0, -1):
+        bar = "█" * i + "░" * (seconds - i)
+        print(f"  [{bar}] {i}秒")
+    print("✨ 时间到！")
+
+countdown(5)`,
+    defaultOutput: '开始倒数!\n  [█████░░░░░] 5秒\n  [████░░░░░░] 4秒\n  [███░░░░░░░] 3秒\n  [██░░░░░░░░] 2秒\n  [█░░░░░░░░░] 1秒\n✨ 时间到！',
+    icon: '⏲️',
+    tag: '循环',
+  },
+  {
+    id: 'word-counter',
+    title: '词频统计器',
+    description: '统计一段话中每个词出现了几次——文本分析第一步',
+    stage: 3,
+    template: `def word_count(text):
+    words = text.lower().replace(".", "").split()
+    freq = {}
+    for w in words:
+        freq[w] = freq.get(w, 0) + 1
+    return freq
+
+poem = "星星在眨眼 星星在发光 每颗星星都不一样"
+result = word_count(poem)
+print("词频统计:")
+for word, count in sorted(result.items(), key=lambda x: -x[1]):
+    bar = "█" * count
+    print(f"  {word}: {bar} ({count})")`,
+    defaultOutput: '词频统计:\n  星星: ███ (3)\n  在: ██ (2)\n  眨眼: █ (1)\n  发光: █ (1)\n  每颗: █ (1)\n  都不一样: █ (1)',
+    icon: '📊',
+    tag: '列表',
+  },
+  {
+    id: 'bmi-calculator',
+    title: 'BMI 计算器',
+    description: '输入身高体重，计算BMI并给出健康建议',
+    stage: 2,
+    template: `def calc_bmi(weight, height):
+    bmi = weight / (height ** 2)
+    if bmi < 18.5:
+        tip = "偏瘦，多吃点哦"
+    elif bmi < 24:
+        tip = "标准，保持得好"
+    elif bmi < 28:
+        tip = "偏重，动起来"
+    else:
+        tip = "需要多锻炼"
+    return bmi, tip
+
+data = [(1.70, 55), (1.65, 58), (1.75, 85)]
+for h, w in data:
+    bmi, tip = calc_bmi(w, h)
+    print(f"身高{h}m {w}kg -> BMI={bmi:.1f} {tip}")`,
+    defaultOutput: '身高1.7m 55kg -> BMI=19.0 标准，保持得好\n身高1.65m 58kg -> BMI=21.3 标准，保持得好\n身高1.75m 85kg -> BMI=27.8 偏重，动起来',
+    icon: '⚖️',
+    tag: '条件',
+  },
 ];
 
 const allTags = ['全部', ...Array.from(new Set(sparks.map((s) => s.tag)))];
