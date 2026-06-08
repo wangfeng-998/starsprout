@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const tabs = [
-  { path: '/', label: '心情', icon: '🌤️', activeIcon: '☀️' },
+  { path: '/', label: '首页', icon: '🏠', activeIcon: '🌻' },
   { path: '/math', label: '数学', icon: '🌱', activeIcon: '🌻' },
   { path: '/code', label: '代码', icon: '✨', activeIcon: '💫' },
   { path: '/path', label: '方向', icon: '🧭', activeIcon: '⭐' },
