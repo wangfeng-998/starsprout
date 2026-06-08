@@ -491,6 +491,129 @@ for h, w in data:
     icon: '⚖️',
     tag: '条件',
   },
+  {
+    id: 'rock-paper-scissors',
+    title: '石头剪刀布',
+    description: '和计算机玩一局——随机出拳，判断胜负',
+    stage: 2,
+    template: `import random
+
+choices = ["石头", "剪刀", "布"]
+player = "石头"  # 试试改这个！
+comp = random.choice(choices)
+print(f"你出: {player}  电脑出: {comp}")
+
+if player == comp:
+    print("平局！")
+elif (player == "石头" and comp == "剪刀") or (player == "剪刀" and comp == "布") or (player == "布" and comp == "石头"):
+    print("你赢了！🎉")
+else:
+    print("电脑赢了~")`,
+    defaultOutput: '你出: 石头  电脑出: 剪刀\n你赢了！🎉',
+    icon: '✊',
+    tag: '随机',
+  },
+  {
+    id: 'caesar-cipher',
+    title: '凯撒密码',
+    description: '古罗马的加密术——每个字母向后移动固定位置',
+    stage: 2,
+    template: `def caesar(text, shift):
+    result = ""
+    for ch in text:
+        if ch.isalpha():
+            base = 'a' if ch.islower() else 'A'
+            result += chr((ord(ch) - ord(base) + shift) % 26 + ord(base))
+        else:
+            result += ch
+    return result
+
+msg = "Hello World"
+encrypted = caesar(msg, 3)
+decrypted = caesar(encrypted, -3)
+print(f"原文: {msg}")
+print(f"加密: {encrypted}")
+print(f"解密: {decrypted}")`,
+    defaultOutput: '原文: Hello World\n加密: Khoor Zruog\n解密: Hello World',
+    icon: '🔐',
+    tag: '循环',
+  },
+  {
+    id: 'gcd-calculator',
+    title: '最大公约数',
+    description: '辗转相除法——欧几里得两千年前的算法，至今仍是最优解',
+    stage: 2,
+    template: `def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+pairs = [(12, 8), (35, 14), (48, 18), (1071, 462)]
+for x, y in pairs:
+    print(f"gcd({x}, {y}) = {gcd(x, y)}")`,
+    defaultOutput: 'gcd(12, 8) = 4\ngcd(35, 14) = 7\ngcd(48, 18) = 6\ngcd(1071, 462) = 21',
+    icon: '🧮',
+    tag: '逻辑',
+  },
+  {
+    id: 'tic-tac-toe-mini',
+    title: '迷你井字棋',
+    description: '用二维列表模拟棋盘——检测谁赢了',
+    stage: 3,
+    template: `def check_winner(board):
+    # 检查行、列、对角线
+    lines = board + list(zip(*board))  # 行 + 列
+    lines.append([board[i][i] for i in range(3)])  # 主对角线
+    lines.append([board[i][2-i] for i in range(3)])  # 副对角线
+    for line in lines:
+        if line[0] != " " and line[0] == line[1] == line[2]:
+            return line[0] + " 赢了！"
+    return "平局中..."
+
+game = [
+    ["X", "O", " "],
+    ["X", "O", " "],
+    ["X", " ", " "]
+]
+print("棋盘:")
+for row in game:
+    print(" | ".join(row))
+print(check_winner(game))`,
+    defaultOutput: '棋盘:\nX | O |  \nX | O |  \nX |   |  \nX 赢了！',
+    icon: '🎮',
+    tag: '列表',
+  },
+  {
+    id: 'hangman-lite',
+    title: '猜词小游戏',
+    description: '经典猜词游戏简化版——每次猜一个字母',
+    stage: 3,
+    template: `word = "star"
+guessed = ["_"] * len(word)
+lives = 5
+hint = "天上的东西"
+
+print(f"提示: {hint}")
+print(f"单词: {' '.join(guessed)}")
+
+# 试试改下面的猜测顺序！
+attempts = ["s", "t", "a", "r"]
+for ch in attempts:
+    if ch in word:
+        for i, w in enumerate(word):
+            if w == ch:
+                guessed[i] = ch
+        print(f"猜 '{ch}' → {' '.join(guessed)} ✅")
+    else:
+        lives -= 1
+        print(f"猜 '{ch}' → 不对 ({lives}条命) ❌")
+
+if "_" not in guessed:
+    print(f"\\n🎉 你猜对了: {''.join(guessed)}!")`,
+    defaultOutput: '提示: 天上的东西\n单词: _ _ _ _\n猜 \'s\' → s _ _ _ ✅\n猜 \'t\' → s t _ _ ✅\n猜 \'a\' → s t a _ ✅\n猜 \'r\' → s t a r ✅\n\n🎉 你猜对了: star!',
+    icon: '💀',
+    tag: '列表',
+  },
 ];
 
 const allTags = ['全部', ...Array.from(new Set(sparks.map((s) => s.tag)))];

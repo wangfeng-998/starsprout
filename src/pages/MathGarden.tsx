@@ -238,6 +238,51 @@ const concepts: Concept[] = [
     icon: '♾️',
     color: '#c4e8c8',
   },
+  {
+    id: 'gram-schmidt',
+    title: '正交化神器',
+    description: '格拉姆-施密特：把一组歪斜的向量"扶正"，变成互相垂直的好基友...',
+    category: 'linear',
+    difficulty: 3,
+    icon: '🧹',
+    color: '#e8c4c4',
+  },
+  {
+    id: 'least-squares',
+    title: '最小二乘法',
+    description: '找一条"最不冤枉"的直线穿过所有散点——误差的平方和最小...',
+    category: 'linear',
+    difficulty: 2,
+    icon: '📉',
+    color: '#c4e8d8',
+  },
+  {
+    id: 'lhopital-rule',
+    title: '洛必达法则',
+    description: '遇到 0/0 或 ∞/∞ 的极限不用慌——上下同时求导就好...',
+    category: 'calculus',
+    difficulty: 2,
+    icon: '🏥',
+    color: '#d8c4e8',
+  },
+  {
+    id: 'integration-by-parts',
+    title: '分部积分法',
+    description: '乘积的积分：把一部分微分，另一部分积分——就像拆积木重组...',
+    category: 'calculus',
+    difficulty: 3,
+    icon: '🧱',
+    color: '#e8d8c4',
+  },
+  {
+    id: 'double-integral',
+    title: '二重积分',
+    description: '先沿一个方向扫一遍，再沿另一个方向扫——曲顶柱体的体积...',
+    category: 'calculus',
+    difficulty: 3,
+    icon: '🏔️',
+    color: '#c4d8e8',
+  },
 ];
 
 const quizQuestions: Record<string, {
@@ -395,6 +440,36 @@ const quizQuestions: Record<string, {
     options: ['无穷大', '2', '1', '0.5'],
     correct: 2,
     hint: '等比数列求和：首项/(1-公比) = 0.5/(1-0.5) = 1。',
+  },
+  'gram-schmidt': {
+    question: 'Gram-Schmidt 正交化的目的是什么？',
+    options: ['求行列式', '把一组向量变成正交向量', '求特征值', '计算矩阵的逆'],
+    correct: 1,
+    hint: '"正交化"就是把歪的"扶正"——让向量两两垂直，互不干扰。',
+  },
+  'least-squares': {
+    question: '最小二乘法中"最小"的是什么？',
+    options: ['x的值', 'y的值', '误差的平方和', '数据点的数量'],
+    correct: 2,
+    hint: '我们想让直线尽量"贴近"所有散点——每条线都有一个总误差，选误差最小的那条。',
+  },
+  'lhopital-rule': {
+    question: '洛必达法则适用于哪种极限？',
+    options: ['∞-∞', '0/0 或 ∞/∞', '0·∞', '1^∞'],
+    correct: 1,
+    hint: '当分子分母同时趋近于0或无穷大时，可以分别对分子分母求导再取极限。',
+  },
+  'integration-by-parts': {
+    question: '分部积分法的公式是？',
+    options: ['∫udv = uv + ∫vdu', '∫udv = uv - ∫vdu', '∫udv = u²/2', '∫udv = uv×2'],
+    correct: 1,
+    hint: '和乘积求导法则反过来——(uv)\' = u\'v + uv\' → uv\' = (uv)\' - u\'v → ∫udv = uv - ∫vdu。',
+  },
+  'double-integral': {
+    question: '二重积分 ∬ f(x,y)dxdy 的几何意义？',
+    options: ['曲线长度', '曲面下的体积', '切平面斜率', '边界周长'],
+    correct: 1,
+    hint: '一重积分得面积（二维），二重积分求体积（三维）——曲顶柱体。',
   },
 };
 
