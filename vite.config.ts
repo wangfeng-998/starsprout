@@ -17,7 +17,7 @@ export default defineConfig({
         background_color: '#faf7f2',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        start_url: '/starsprout/',
         icons: [
           {
             src: 'icon-192.png',

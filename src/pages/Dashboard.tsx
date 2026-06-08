@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAppStore } from '../store';
+import { useAppStore, MoodEmoji } from '../store';
 
 const greetings = {
   morning: { text: '早上好', emoji: '☀️', range: [5, 11] },
@@ -60,6 +60,22 @@ export default function Dashboard() {
   const mathTotal = mathProgress.length || 6; // fallback to 6 total concepts
   const codeDone = codeProgress.filter((p) => p.stage === 'create').length;
   const codeTotal = codeProgress.length || 6;
+
+  // Week mood strip
+  const weekMoods: { day: string; emoji: string }[] = (() => {
+    const days = ['日', '一', '二', '三', '四', '五', '六'];
+    const result: { day: string; emoji: string }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const record = moodHistory.find(
+        r => new Date(r.timestamp).toISOString().split('T')[0] === dateStr
+      );
+      result.push({ day: days[d.getDay()], emoji: record?.emoji || '' });
+    }
+    return result;
+  })();
 
   return (
     <div className="page-transition px-4 pt-6 pb-6 space-y-5">
@@ -191,6 +207,28 @@ export default function Dashboard() {
           </div>
         )}
       </motion.div>
+
+      {/* ===== 7日心情一览 ===== */}
+      {moodHistory.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+          className="card-warm"
+        >
+          <h3 className="text-xs font-semibold text-earth-500 mb-3">近 7 日心情</h3>
+          <div className="flex justify-between">
+            {weekMoods.map((d, i) => (
+              <div key={i} className="flex flex-col items-center gap-1">
+                <span className={`text-lg ${d.emoji ? '' : 'opacity-20'}`}>
+                  {d.emoji || '☁️'}
+                </span>
+                <span className="text-[10px] text-earth-400">{d.day}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* ===== 快捷入口 ===== */}
       <motion.div

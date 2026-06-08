@@ -45,6 +45,11 @@ export interface AppState {
   // Path Finder
   likedInterests: string[];
   abilityPuzzleCompleted: boolean;
+  puzzleTrait: string | null;
+
+  // Safe Space
+  gratitudes: string[];
+  worryBox: string[];
 
   // Actions
   setUserName: (name: string) => void;
@@ -59,6 +64,11 @@ export interface AppState {
   addLikedInterest: (interest: string) => void;
   removeLikedInterest: (interest: string) => void;
   completeAbilityPuzzle: () => void;
+  setPuzzleTrait: (trait: string) => void;
+  addGratitude: (item: string) => void;
+  clearGratitudes: () => void;
+  addWorry: (item: string) => void;
+  clearWorries: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -76,6 +86,9 @@ export const useAppStore = create<AppState>()(
       codeProgress: [],
       likedInterests: [],
       abilityPuzzleCompleted: false,
+      puzzleTrait: null,
+      gratitudes: [],
+      worryBox: [],
 
       setUserName: (name) => set({ userName: name }),
       setUserAvatar: (avatar) => set({ userAvatar: avatar }),
@@ -144,6 +157,14 @@ export const useAppStore = create<AppState>()(
         })),
 
       completeAbilityPuzzle: () => set({ abilityPuzzleCompleted: true }),
+
+      setPuzzleTrait: (trait) => set({ puzzleTrait: trait }),
+      addGratitude: (item) =>
+        set((state) => ({ gratitudes: [...state.gratitudes, item] })),
+      clearGratitudes: () => set({ gratitudes: [] }),
+      addWorry: (item) =>
+        set((state) => ({ worryBox: [...state.worryBox, item] })),
+      clearWorries: () => set({ worryBox: [] }),
     }),
     {
       name: 'starsprout-storage',

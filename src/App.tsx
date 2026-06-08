@@ -9,6 +9,7 @@ import MathGarden from './pages/MathGarden';
 import CodeSparks from './pages/CodeSparks';
 import PathFinder from './pages/PathFinder';
 import SafeSpace from './pages/SafeSpace';
+import BreathingPage from './pages/BreathingPage';
 
 export default function App() {
   const onboardingComplete = useAppStore((s) => s.onboardingComplete);
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/code" element={<CodeSparks />} />
           <Route path="/path" element={<PathFinder />} />
           <Route path="/safe" element={<SafeSpace />} />
+          <Route path="/breathe" element={<BreathingPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>

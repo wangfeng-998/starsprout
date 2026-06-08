@@ -202,7 +202,7 @@ const puzzleQuestions = [
 ];
 
 export default function PathFinder() {
-  const { likedInterests, addLikedInterest, removeLikedInterest, abilityPuzzleCompleted, completeAbilityPuzzle } =
+  const { likedInterests, addLikedInterest, removeLikedInterest, abilityPuzzleCompleted, puzzleTrait, completeAbilityPuzzle, setPuzzleTrait } =
     useAppStore();
 
   const [currentCard, setCurrentCard] = useState(0);
@@ -256,6 +256,7 @@ export default function PathFinder() {
       };
 
       setPuzzleResult(topTrait);
+      setPuzzleTrait(topTrait);
       completeAbilityPuzzle();
     }
   };
@@ -521,7 +522,22 @@ export default function PathFinder() {
         ) : (
           <div className="text-center py-2">
             <span className="text-2xl">✅</span>
-            <p className="text-xs text-earth-400 mt-1">已完成能力拼图</p>
+            <p className="text-xs text-earth-400 mt-1">
+              {puzzleTrait
+                ? `已完成能力拼图 · 特质：${puzzleTrait}`
+                : '已完成能力拼图'}
+            </p>
+            <button
+              onClick={() => {
+                setShowPuzzle(true);
+                setPuzzleStep(0);
+                setPuzzleAnswers([]);
+                setPuzzleResult(null);
+              }}
+              className="btn-ghost text-xs text-calm-gold mt-1"
+            >
+              重新探索
+            </button>
           </div>
         )}
       </div>

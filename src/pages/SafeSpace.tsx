@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAppStore } from '../store';
 
 interface Soundscape {
   id: string;
@@ -63,9 +64,9 @@ export default function SafeSpace() {
   const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale' | 'rest'>('inhale');
   const [breathCycle, setBreathCycle] = useState(0);
   const [gratitudeItem, setGratitudeItem] = useState('');
-  const [gratitudes, setGratitudes] = useState<string[]>([]);
+  const { gratitudes, addGratitude, clearGratitudes } = useAppStore();
   const [worryText, setWorryText] = useState('');
-  const [worryBox, setWorryBox] = useState<string[]>([]);
+  const { worryBox, addWorry, clearWorries } = useAppStore();
   const [showWorryBox, setShowWorryBox] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const meditateTimerRef = useRef<ReturnType<typeof setInterval>>();
@@ -447,21 +448,49 @@ export default function SafeSpace() {
         )}
       </div>
 
-      {/* Growth Timeline placeholder */}
+      {/* Growth Timeline - Dynamic */}
       <div className="card-warm mb-4">
         <h2 className="text-sm font-semibold text-earth-600 mb-3">
           成长时间线 📅
         </h2>
-        <div className="text-center py-6">
-          <span className="text-3xl mb-2 block">🌱</span>
-          <p className="text-sm text-earth-500 mb-1">
-            你已经走了很远的路
-          </p>
-          <p className="text-xs text-earth-400">
-            每一次打开星芽，每一次记录心情，
-            每一次尝试——都是成长。
-          </p>
-        </div>
+        {(() => {
+          const moodCount = useAppStore.getState().moodHistory.length;
+          const mathCount = useAppStore.getState().mathProgress.length;
+          const mathFlowers = useAppStore.getState().gardenDecorations.length;
+          const codeCount = useAppStore.getState().codeProgress.filter(p => p.stage === 'create').length;
+          const streak = useAppStore.getState().streak;
+          
+          const milestones: { icon: string; text: string; done: boolean }[] = [
+            { icon: '📝', text: `记录了 ${moodCount} 次心情`, done: moodCount > 0 },
+            { icon: '🔥', text: `连续签到 ${streak} 天`, done: streak >= 3 },
+            { icon: '🌱', text: `种下 ${mathCount} 颗数学种子`, done: mathCount > 0 },
+            { icon: '🌸', text: `${mathFlowers} 朵花盛开`, done: mathFlowers > 0 },
+            { icon: '💫', text: `完成 ${codeCount} 个代码火花`, done: codeCount > 0 },
+            { icon: `${gratitudes.length > 0 ? '💛' : '📝'}`, text: `${gratitudes.length} 件感恩小事`, done: gratitudes.length > 0 },
+          ];
+
+          return (
+            <div className="space-y-2">
+              {milestones.map((m, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`flex items-center gap-3 p-2 rounded-xl text-sm ${
+                    m.done ? 'bg-calm-gold/5 text-earth-600' : 'bg-earth-100/30 text-earth-400'
+                  }`}
+                >
+                  <span className={`text-lg ${m.done ? '' : 'opacity-40'}`}>
+                    {m.done ? m.icon : '✨'}
+                  </span>
+                  <span>{m.text}</span>
+                  {m.done && <span className="ml-auto text-calm-green text-xs">✓</span>}
+                </motion.div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* 4-7-8 Breathing */}
@@ -538,7 +567,7 @@ export default function SafeSpace() {
             className="flex-1 px-3 py-2 rounded-xl text-sm bg-earth-100/40 border border-earth-200 focus:outline-none focus:border-calm-gold/50"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && gratitudeItem.trim()) {
-                setGratitudes([...gratitudes, gratitudeItem.trim()]);
+                addGratitude(gratitudeItem.trim());
                 setGratitudeItem('');
               }
             }}
@@ -546,7 +575,7 @@ export default function SafeSpace() {
           <button
             onClick={() => {
               if (gratitudeItem.trim()) {
-                setGratitudes([...gratitudes, gratitudeItem.trim()]);
+                addGratitude(gratitudeItem.trim());
                 setGratitudeItem('');
               }
             }}
@@ -599,7 +628,7 @@ export default function SafeSpace() {
                 className="flex-1 px-3 py-2 rounded-xl text-sm bg-earth-100/40 border border-earth-200 focus:outline-none focus:border-calm-pink/50"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && worryText.trim()) {
-                    setWorryBox([...worryBox, worryText.trim()]);
+                    addWorry(worryText.trim());
                     setWorryText('');
                   }
                 }}
@@ -607,7 +636,7 @@ export default function SafeSpace() {
               <button
                 onClick={() => {
                   if (worryText.trim()) {
-                    setWorryBox([...worryBox, worryText.trim()]);
+                    addWorry(worryText.trim());
                     setWorryText('');
                   }
                 }}
@@ -635,7 +664,7 @@ export default function SafeSpace() {
             </p>
             {worryBox.length > 0 && (
               <button
-                onClick={() => setWorryBox([])}
+                onClick={() => clearWorries()}
                 className="btn-ghost text-xs text-calm-pink/70 w-full"
               >
                 清空箱子 🗑️

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAppStore } from '../store';
 
 interface Spark {
   id: string;
@@ -624,6 +625,9 @@ export default function CodeSparks() {
   const [output, setOutput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [filterTag, setFilterTag] = useState('全部');
+  const [hasModified, setHasModified] = useState(false);
+  const updateCodeProgress = useAppStore((s) => s.updateCodeProgress);
+  const codeProgress = useAppStore((s) => s.codeProgress);
 
   const visibleSparks = useMemo(
     () => (filterTag === '全部' ? sparks : sparks.filter((s) => s.tag === filterTag)),
@@ -633,6 +637,7 @@ export default function CodeSparks() {
   const openSpark = (spark: Spark) => {
     setActiveSpark(spark);
     setUserCode(spark.template);
+    setHasModified(false);
     setOutput('');
     setErrorMsg('');
   };
@@ -643,7 +648,7 @@ export default function CodeSparks() {
 
     try {
       // If code hasn't been modified, show default output
-      if (activeSpark && userCode === activeSpark.template) {
+      if (activeSpark && !hasModified) {
         setOutput(activeSpark.defaultOutput);
         return;
       }
@@ -672,6 +677,18 @@ export default function CodeSparks() {
         setOutput(activeSpark.defaultOutput);
       } else {
         setOutput('代码运行完成 ✅');
+      }
+
+      // Track code progress in store
+      if (activeSpark && hasModified) {
+        const existing = codeProgress.find((p) => p.sparkId === activeSpark.id);
+        const currentStage = existing?.stage || 'copy';
+        const nextStage = currentStage === 'copy' ? 'modify' : 'create';
+        updateCodeProgress({
+          sparkId: activeSpark.id,
+          stage: nextStage,
+          completedAt: nextStage === 'create' ? Date.now() : undefined,
+        });
       }
     } catch {
       setErrorMsg('遇到了一点小问题... 调整一下代码就好 🌱');
@@ -770,9 +787,17 @@ export default function CodeSparks() {
             <h3 className="text-sm font-medium text-earth-700 mb-1">
               {spark.title}
             </h3>
-            <p className="text-xs text-earth-400 leading-relaxed line-clamp-2">
-              {spark.description}
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-earth-400 leading-relaxed line-clamp-2">
+                {spark.description}
+              </p>
+              {(() => {
+                const p = codeProgress.find((c) => c.sparkId === spark.id);
+                if (p?.stage === 'create') return <span className="text-xs shrink-0 ml-1">💫</span>;
+                if (p?.stage === 'modify') return <span className="text-xs shrink-0 ml-1">✨</span>;
+                return null;
+              })()}
+            </div>
           </motion.button>
         ))}
       </div>
@@ -815,7 +840,10 @@ export default function CodeSparks() {
                   className="w-full bg-earth-900 text-emerald-300 font-mono text-sm p-3 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-calm-gold/30"
                   rows={Math.min(userCode.split('\n').length + 2, 15)}
                   value={userCode}
-                  onChange={(e) => setUserCode(e.target.value)}
+                  onChange={(e) => {
+                    setUserCode(e.target.value);
+                    setHasModified(true);
+                  }}
                   spellCheck={false}
                 />
               </div>
