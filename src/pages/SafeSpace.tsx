@@ -15,6 +15,9 @@ const soundscapes: Soundscape[] = [
   { id: 'ocean', name: '海浪', emoji: '🌊', description: '潮起潮落，一切都慢下来' },
   { id: 'cafe', name: '咖啡馆', emoji: '☕', description: '远处的交谈声，安心而慵懒' },
   { id: 'wind', name: '微风', emoji: '🍃', description: '轻轻的风铃声，让人平静' },
+  { id: 'thunder', name: '雷雨', emoji: '⛈️', description: '窗外大雨，被窝最安全' },
+  { id: 'stream', name: '溪流', emoji: '🏞️', description: '山涧清泉，带走烦恼' },
+  { id: 'night', name: '夏夜', emoji: '🌌', description: '蛐蛐低鸣，星空辽阔' },
 ];
 
 const meditations = [
@@ -33,6 +36,9 @@ const affirmations = [
   '慢慢来，一切都会好起来的。',
   '你不是一个人在经历这些。',
   '休息也是一种进步。',
+  '今天能睁开眼，就已经赢了。',
+  '你的价值不由你完成了多少事来决定。',
+  '没有人是完美的——包括那些看起来完美的人。',
 ];
 
 // 5-4-3-2-1 grounding exercise
@@ -53,8 +59,17 @@ export default function SafeSpace() {
   const [showEmergency, setShowEmergency] = useState(false);
   const [groundingStep, setGroundingStep] = useState(0);
   const [affirmation, setAffirmation] = useState('');
+  const [showBreathing, setShowBreathing] = useState(false);
+  const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale' | 'rest'>('inhale');
+  const [breathCycle, setBreathCycle] = useState(0);
+  const [gratitudeItem, setGratitudeItem] = useState('');
+  const [gratitudes, setGratitudes] = useState<string[]>([]);
+  const [worryText, setWorryText] = useState('');
+  const [worryBox, setWorryBox] = useState<string[]>([]);
+  const [showWorryBox, setShowWorryBox] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
   const meditateTimerRef = useRef<ReturnType<typeof setInterval>>();
+  const breathTimerRef = useRef<ReturnType<typeof setInterval>>();
 
   // Affirmation rotation
   useEffect(() => {
@@ -79,7 +94,45 @@ export default function SafeSpace() {
     }
   };
 
-  // Meditation
+  // 4-7-8 Breathing
+  const start478Breathing = () => {
+    setShowBreathing(true);
+    setBreathCycle(0);
+    setBreathPhase('inhale');
+    const phases: Array<{ phase: 'inhale' | 'hold' | 'exhale' | 'rest'; duration: number }> = [
+      { phase: 'inhale', duration: 4 },
+      { phase: 'hold', duration: 7 },
+      { phase: 'exhale', duration: 8 },
+      { phase: 'rest', duration: 2 },
+    ];
+    let cycle = 0;
+    let phaseIdx = 0;
+    let elapsed = 0;
+
+    breathTimerRef.current = setInterval(() => {
+      elapsed++;
+      const current = phases[phaseIdx];
+      setBreathPhase(current.phase);
+      if (elapsed >= current.duration) {
+        elapsed = 0;
+        phaseIdx++;
+        if (phaseIdx >= phases.length) {
+          phaseIdx = 0;
+          cycle++;
+          setBreathCycle(cycle);
+          if (cycle >= 4) {
+            clearInterval(breathTimerRef.current);
+            setShowBreathing(false);
+          }
+        }
+      }
+    }, 1000);
+  };
+
+  const stopBreathing = () => {
+    if (breathTimerRef.current) clearInterval(breathTimerRef.current);
+    setShowBreathing(false);
+  };
   const startMeditation = (duration: number) => {
     setMeditationTime(duration * 60);
     setIsMeditating(true);
@@ -110,7 +163,7 @@ export default function SafeSpace() {
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (meditateTimerRef.current) clearInterval(meditateTimerRef.current);
+      if (breathTimerRef.current) clearInterval(breathTimerRef.current);
     };
   }, []);
 
@@ -395,7 +448,7 @@ export default function SafeSpace() {
       </div>
 
       {/* Growth Timeline placeholder */}
-      <div className="card-warm">
+      <div className="card-warm mb-4">
         <h2 className="text-sm font-semibold text-earth-600 mb-3">
           成长时间线 📅
         </h2>
@@ -409,6 +462,187 @@ export default function SafeSpace() {
             每一次尝试——都是成长。
           </p>
         </div>
+      </div>
+
+      {/* 4-7-8 Breathing */}
+      <div className="card-warm mb-4">
+        <h2 className="text-sm font-semibold text-earth-600 mb-3">
+          4-7-8 呼吸法 🫁
+        </h2>
+        <p className="text-xs text-earth-400 mb-3">
+          吸气4秒 → 屏息7秒 → 呼气8秒，自然放松的节奏
+        </p>
+        {!showBreathing ? (
+          <button
+            onClick={start478Breathing}
+            className="btn-primary text-sm w-full"
+          >
+            开始呼吸 🍃
+          </button>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-4"
+          >
+            <motion.div
+              className="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-2xl mb-3"
+              animate={{
+                scale: breathPhase === 'inhale' ? [1, 1.3] : breathPhase === 'exhale' ? [1.3, 1] : 1.3,
+              }}
+              transition={{ duration: breathPhase === 'exhale' ? 8 : breathPhase === 'inhale' ? 4 : 7, ease: 'easeInOut' }}
+              style={{ backgroundColor: 'rgba(143, 188, 143, 0.15)' }}
+            >
+              {breathPhase === 'inhale' ? '🫁' : breathPhase === 'hold' ? '⏸️' : breathPhase === 'exhale' ? '💨' : '😌'}
+            </motion.div>
+            <p className="text-lg font-medium text-earth-700 mb-1">
+              {breathPhase === 'inhale'
+                ? '吸气... 4'
+                : breathPhase === 'hold'
+                ? '屏息... 7'
+                : breathPhase === 'exhale'
+                ? '呼气... 8'
+                : '放松... ☁️'}
+            </p>
+            <div className="flex justify-center gap-1 mb-3">
+              {[0, 1, 2, 3].map((n) => (
+                <span
+                  key={n}
+                  className={`w-2 h-2 rounded-full ${
+                    n < breathCycle ? 'bg-calm-green' : 'bg-earth-200'
+                  }`}
+                />
+              ))}
+            </div>
+            <button onClick={stopBreathing} className="btn-ghost text-xs text-earth-400">
+              提前结束
+            </button>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Gratitude Journal */}
+      <div className="card-warm mb-4">
+        <h2 className="text-sm font-semibold text-earth-600 mb-3">
+          感恩日记 📝
+        </h2>
+        <p className="text-xs text-earth-400 mb-3">
+          每天写下三件值得感谢的小事——哪怕只是"今天天气不错"
+        </p>
+        <div className="flex gap-2 mb-3">
+          <input
+            type="text"
+            value={gratitudeItem}
+            onChange={(e) => setGratitudeItem(e.target.value)}
+            placeholder="比如：室友帮我带了饭..."
+            className="flex-1 px-3 py-2 rounded-xl text-sm bg-earth-100/40 border border-earth-200 focus:outline-none focus:border-calm-gold/50"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && gratitudeItem.trim()) {
+                setGratitudes([...gratitudes, gratitudeItem.trim()]);
+                setGratitudeItem('');
+              }
+            }}
+          />
+          <button
+            onClick={() => {
+              if (gratitudeItem.trim()) {
+                setGratitudes([...gratitudes, gratitudeItem.trim()]);
+                setGratitudeItem('');
+              }
+            }}
+            className="px-4 py-2 rounded-xl bg-calm-gold/15 text-calm-gold text-sm hover:bg-calm-gold/25 transition-colors"
+          >
+            +
+          </button>
+        </div>
+        {gratitudes.length > 0 && (
+          <div className="space-y-1">
+            {gratitudes.map((g, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center gap-2 text-sm text-earth-600 bg-earth-100/30 px-3 py-2 rounded-lg"
+              >
+                <span>{['🌸', '🌿', '⭐', '💛', '🕊️'][i % 5]}</span>
+                {g}
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Worry Box */}
+      <div className="card-warm">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xl">📦</span>
+          <h2 className="text-sm font-semibold text-earth-600">焦虑投放箱</h2>
+        </div>
+        <p className="text-xs text-earth-400 mb-3">
+          把让你焦虑的事写下来，投进箱子里。写下来的那一刻，它就离开你的大脑了。
+        </p>
+        {!showWorryBox ? (
+          <button
+            onClick={() => setShowWorryBox(true)}
+            className="btn-ghost text-sm text-earth-500 w-full"
+          >
+            打开投放箱 →
+          </button>
+        ) : (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={worryText}
+                onChange={(e) => setWorryText(e.target.value)}
+                placeholder="比如：明天那个考试..."
+                className="flex-1 px-3 py-2 rounded-xl text-sm bg-earth-100/40 border border-earth-200 focus:outline-none focus:border-calm-pink/50"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && worryText.trim()) {
+                    setWorryBox([...worryBox, worryText.trim()]);
+                    setWorryText('');
+                  }
+                }}
+              />
+              <button
+                onClick={() => {
+                  if (worryText.trim()) {
+                    setWorryBox([...worryBox, worryText.trim()]);
+                    setWorryText('');
+                  }
+                }}
+                className="px-4 py-2 rounded-xl bg-calm-pink/15 text-calm-pink text-sm hover:bg-calm-pink/25"
+              >
+                📥
+              </button>
+            </div>
+            {worryBox.length > 0 && (
+              <div className="space-y-1 mb-3">
+                {worryBox.map((w, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-xs text-earth-500 bg-earth-100/30 px-3 py-2 rounded-lg italic"
+                  >
+                    {w}
+                  </motion.div>
+                ))}
+              </div>
+            )}
+            <p className="text-[10px] text-earth-300 text-center mb-2">
+              这些事已经写在箱子上了，现在可以暂时放下它们
+            </p>
+            {worryBox.length > 0 && (
+              <button
+                onClick={() => setWorryBox([])}
+                className="btn-ghost text-xs text-calm-pink/70 w-full"
+              >
+                清空箱子 🗑️
+              </button>
+            )}
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );

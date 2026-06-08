@@ -85,6 +85,69 @@ const interestCards: InterestCard[] = [
     color: '#b5d8e8',
     scenario: '你的算法优化城市公交路线，减少碳排放；你的传感器网络监测森林火情...',
   },
+  {
+    id: 'cybersecurity',
+    title: '网络安全',
+    description: '像数字世界的守护者——保护信息不被坏人窃取',
+    icon: '🛡️',
+    category: '科技',
+    color: '#c4c8e8',
+    scenario: '你发现了一个银行系统的漏洞并及时修复，保护了数百万人的财产安全...',
+  },
+  {
+    id: 'robotics',
+    title: '机器人',
+    description: '把代码注入机器，让它们动起来、感知世界、甚至帮助人类',
+    icon: '🦾',
+    category: '科技',
+    color: '#d0d0d0',
+    scenario: '你设计的机械臂准确地完成精密手术，或者你的救援机器人在废墟中找到了幸存者...',
+  },
+  {
+    id: 'biomedical',
+    title: '生物医学工程',
+    description: '用工程技术解决健康问题——假肢、影像、新药研发',
+    icon: '🔬',
+    category: '健康',
+    color: '#c4e8d0',
+    scenario: '你改良的假肢让失去双腿的人重新奔跑——科技直接改变生命的质量...',
+  },
+  {
+    id: 'urban-planning',
+    title: '智慧城市',
+    description: '设计更宜居的城市——把传感器、数据和建筑结合起来',
+    icon: '🏙️',
+    category: '设计',
+    color: '#e8d8c4',
+    scenario: '你设计的智能交通系统让一个城市的拥堵减少了40%，空气也变好了...',
+  },
+  {
+    id: 'content-creation',
+    title: '内容创作',
+    description: '写文章、拍视频、做播客——用你的声音影响世界',
+    icon: '🎬',
+    category: '艺术',
+    color: '#e0c4e8',
+    scenario: '你的视频帮助成千上万人理解了复杂的科技概念，你的播客成为很多人的睡前陪伴...',
+  },
+  {
+    id: 'psychology-tech',
+    title: '心理科技',
+    description: '结合心理学和技术，设计能真正帮到人的产品',
+    icon: '🧠',
+    category: '健康',
+    color: '#c4e0e8',
+    scenario: '你和心理学家一起设计了一个App，让CBT疗法触手可及，帮无数人走出抑郁...',
+  },
+  {
+    id: 'web3-blockchain',
+    title: 'Web3 / 区块链',
+    description: '探索下一代互联网——去中心化、数字身份和新型协作方式',
+    icon: '⛓️',
+    category: '科技',
+    color: '#f0e0c4',
+    scenario: '你设计的去中心化平台让创作者直接获得收入，不再被中间商抽成...',
+  },
 ];
 
 const puzzleQuestions = [
@@ -110,6 +173,30 @@ const puzzleQuestions = [
       { text: '今天想做点什么', trait: '目标导向' },
       { text: '就躺着，享受安静', trait: '内省型' },
       { text: '看看朋友们在干嘛', trait: '社交型' },
+    ],
+  },
+  {
+    question: '面对一个从未用过的新软件，你会？',
+    options: [
+      { text: '先点遍所有按钮，探索一下', trait: '实践型' },
+      { text: '先找教程视频看一遍', trait: '视觉型' },
+      { text: '先想想它背后的逻辑', trait: '秩序感' },
+    ],
+  },
+  {
+    question: '在小组项目中，你通常？',
+    options: [
+      { text: '主动规划分工和时间线', trait: '目标导向' },
+      { text: '提出创新的点子', trait: '创造力' },
+      { text: '关注每个人的感受和参与', trait: '社交型' },
+    ],
+  },
+  {
+    question: '如果一天完全自由，你会？',
+    options: [
+      { text: '学一个新技能或研究一个话题', trait: '内省型' },
+      { text: '动手做点什么（画画/手工/编程）', trait: '实践型' },
+      { text: '计划未来想做的事', trait: '目标导向' },
     ],
   },
 ];
@@ -219,6 +306,31 @@ export default function PathFinder() {
                 ? '暂时没有心动的方向，没关系——会遇到的'
                 : `你标注了 ${likedInterests.length} 个感兴趣的方向`}
             </p>
+            {likedInterests.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs text-earth-500 mb-2">你的兴趣分布：</p>
+                <div className="flex flex-wrap gap-1 justify-center">
+                  {(() => {
+                    const cats = interestCards
+                      .filter((c) => likedInterests.includes(c.id))
+                      .reduce<Record<string, number>>((acc, c) => {
+                        acc[c.category] = (acc[c.category] || 0) + 1;
+                        return acc;
+                      }, {});
+                    return Object.entries(cats)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([cat, count]) => (
+                        <span
+                          key={cat}
+                          className="text-xs px-2 py-0.5 rounded-full bg-calm-gold/10 text-calm-gold"
+                        >
+                          {cat} ×{count}
+                        </span>
+                      ));
+                  })()}
+                </div>
+              </div>
+            )}
             <button
               onClick={() => setCurrentCard(0)}
               className="btn-ghost text-sm text-calm-gold"
