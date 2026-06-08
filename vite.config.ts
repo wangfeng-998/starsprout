@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: '/starsprout/', // GitHub Pages 需要匹配仓库名
   plugins: [
     react(),
     VitePWA({
